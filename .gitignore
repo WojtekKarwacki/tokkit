@@ -1,0 +1,26 @@
+# Rust
+target
+*.so
+*.pyd
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv
+.pytest_cache/
+dist/
+build/
+
+# Worktrees
+.worktrees/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Benchmark cache
+tests/e2e/benchmark/.cache/

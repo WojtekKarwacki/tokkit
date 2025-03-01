@@ -1,0 +1,14 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/tokkit-core",
+    "crates/tokkit-py",
+]
+
+[workspace.package]
+version = "0.1.17"
+edition = "2024"
+license = "MIT"
+
+[workspace.dependencies]
+tokkit-core = { path = "crates/tokkit-core" }
