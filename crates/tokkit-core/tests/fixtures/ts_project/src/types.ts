@@ -13,4 +13,5 @@ export enum UserRole {
     Admin,
     Editor,
     Viewer,
+// rev-4
 }
