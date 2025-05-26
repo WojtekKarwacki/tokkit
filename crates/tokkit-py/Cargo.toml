@@ -1,0 +1,14 @@
+[package]
+name = "tokkit-py"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+name = "tokkit_py"
+crate-type = ["cdylib"]
+
+[dependencies]
+tokkit-core.workspace = true
+pyo3 = { version = "0.23", features = ["extension-module"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
