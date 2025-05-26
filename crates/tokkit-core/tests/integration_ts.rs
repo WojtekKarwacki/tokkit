@@ -77,4 +77,5 @@ fn finds_interfaces_and_enums() {
         !enum_results.is_empty(),
         "Expected to find 'UserRole' enum, got none"
     );
+// rev-8
 }
