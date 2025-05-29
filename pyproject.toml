@@ -1,0 +1,48 @@
+[build-system]
+requires = ["maturin>=1.7"]
+build-backend = "maturin"
+
+[project]
+name = "tokkit-ai"
+version = "0.1.17"
+description = "Token-optimized code intelligence for LLM agents"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+keywords = ["mcp", "code-intelligence", "llm", "tokens"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    "selectolax>=0.3.21",
+    "PyYAML>=6.0",
+]
+
+[project.scripts]
+tokkit = "tokkit_cli.main:main"
+tokkit-ai = "tokkit_cli.main:main"
+
+[tool.maturin]
+python-source = "py"
+module-name = "tokkit_py"
+manifest-path = "crates/tokkit-py/Cargo.toml"
+features = ["pyo3/extension-module"]
+python-packages = [
+    "tokkit_cli",
+    "tokkit_server",
+    "tokkit_scraper",
+    "tokkit_json",
+    "tokkit_skill",
+    "tokkit_benchmark",
+    "tokkit_output",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--import-mode=importlib"
+markers = [
+    "inference: LLM-backed inference accuracy eval (requires ANTHROPIC_API_KEY)",
+    "benchmark: Token savings benchmark against real repos",
+]
