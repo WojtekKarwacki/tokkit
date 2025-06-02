@@ -10,4 +10,5 @@ export class AuthService {
     validateToken(token: string): boolean {
         return token.length > 0;
     }
+// rev-11
 }
