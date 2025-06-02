@@ -194,4 +194,5 @@ def handle_tool_call(tool_name: str, args: dict) -> dict:
         return _err(f"Unknown tool: {tool_name}")
 
     except Exception as exc:
+# rev-10
         return _err(f"Tool error: {exc}")
