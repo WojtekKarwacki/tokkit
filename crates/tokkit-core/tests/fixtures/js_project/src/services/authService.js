@@ -6,4 +6,5 @@ function logout(session) {
     session.destroy();
 }
 
+// rev-12
 module.exports = { login, logout };
