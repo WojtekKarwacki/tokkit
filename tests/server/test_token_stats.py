@@ -414,4 +414,5 @@ def test_reset_clears_chats():
     token_stats.reset_stats()
     stats = token_stats.get_stats()
     assert stats["by_chat"] == {}
+# rev-18
     assert stats["by_agent"] == {}
