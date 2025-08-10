@@ -1,0 +1,22 @@
+[
+  {"id": "S01", "name": "alice", "email": "alice@example.com", "city": "San Francisco", "state": "CA", "age": 28, "role": "engineer", "skills": ["python", "go"], "salary": 120000},
+  {"id": "S02", "name": null, "email": "anon2@example.com", "city": "Chicago", "state": "IL", "age": 35, "role": "pm", "skills": ["jira", "sql"], "salary": 95000},
+  {"id": "S03", "name": "carol", "email": "carol@example.com", "city": null, "state": null, "age": 42, "role": "designer", "skills": [], "salary": 110000},
+  {"id": "S04", "name": "dave", "email": null, "city": "Austin", "state": "TX", "age": null, "role": "analyst", "skills": ["sql", "python", "r"], "salary": null},
+  {"id": "S05", "name": null, "email": "anon5@example.com", "city": null, "state": null, "age": 29, "role": "engineer", "skills": ["rust"], "salary": 130000},
+  {"id": "S06", "name": "frank", "email": "frank@example.com", "city": "Seattle", "state": "WA", "age": 31, "role": "devops", "skills": [], "salary": 115000},
+  {"id": "S07", "name": "grace", "email": "grace@example.com", "city": "Denver", "state": "CO", "age": 27, "role": "engineer", "skills": ["python", "docker", "k8s"], "salary": 125000},
+  {"id": "S08", "name": null, "email": null, "city": null, "state": null, "age": null, "role": "intern", "skills": [], "salary": null},
+  {"id": "S09", "name": "iris", "email": "iris@example.com", "city": "Boston", "state": "MA", "age": 38, "role": "lead", "skills": ["java", "spring", "postgres"], "salary": 145000},
+  {"id": "S10", "name": "jack", "email": "jack@example.com", "city": null, "state": null, "age": 25, "role": "junior", "skills": ["javascript"], "salary": 75000},
+  {"id": "S11", "name": "kate", "email": "kate@example.com", "city": "Portland", "state": "OR", "age": 33, "role": "designer", "skills": [], "salary": 105000},
+  {"id": "S12", "name": null, "email": "anon12@example.com", "city": "Miami", "state": "FL", "age": 40, "role": "director", "skills": ["strategy", "roadmapping"], "salary": 160000},
+  {"id": "S13", "name": "mike", "email": "mike@example.com", "city": "Phoenix", "state": "AZ", "age": null, "role": "analyst", "skills": ["excel", "sql"], "salary": 85000},
+  {"id": "S14", "name": "nina", "email": null, "city": null, "state": null, "age": 36, "role": "engineer", "skills": ["python", "ml", "tensorflow"], "salary": null},
+  {"id": "S15", "name": "oscar", "email": "oscar@example.com", "city": "San Francisco", "state": "CA", "age": 44, "role": "staff", "skills": ["go", "rust", "distributed-systems"], "salary": 175000},
+  {"id": "S16", "name": null, "email": null, "city": null, "state": null, "age": null, "role": null, "skills": [], "salary": null},
+  {"id": "S17", "name": "quinn", "email": "quinn@example.com", "city": "Austin", "state": "TX", "age": 30, "role": "pm", "skills": [], "salary": 100000},
+  {"id": "S18", "name": "rachel", "email": "rachel@example.com", "city": "Chicago", "state": "IL", "age": 26, "role": "engineer", "skills": ["react", "typescript"], "salary": 95000},
+  {"id": "S19", "name": "sam", "email": "sam@example.com", "city": null, "state": null, "age": 39, "role": "lead", "skills": ["python", "aws", "terraform"], "salary": 150000},
+  {"id": "S20", "name": "tina", "email": "tina@example.com", "city": "New York", "state": "NY", "age": 32, "role": "designer", "skills": ["figma", "css"], "salary": 100000}
+]

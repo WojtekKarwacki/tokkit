@@ -1,0 +1,17 @@
+[
+  {"id": "T01", "name": "alice", "email": "alice@example.com", "description": "Regular user", "code": 100, "tags": ["admin", "active"]},
+  {"id": "T02", "name": "bob", "email": "bob@example.com", "description": "Uses {template} syntax daily", "code": 200, "tags": ["user"]},
+  {"id": "T03", "name": "O'Brien; Jr.", "email": "obrien@example.com", "description": "Name has semicolons", "code": 404, "tags": ["legacy", "vip"]},
+  {"id": "T04", "name": "diana", "email": "diana@example.com", "description": "Config: {a: 1, b: 2}", "code": 301, "tags": ["a;b", "c{d}"]},
+  {"id": "T05", "name": "test;user", "email": "test;user@example.com", "description": "Semicolons in name and email", "code": 404, "tags": ["test"]},
+  {"id": "T06", "name": "café owner", "email": "cafe@example.com", "description": "Unicode in name", "code": 500, "tags": ["unicode", "café"]},
+  {"id": "T07", "name": "george", "email": "george@example.com", "description": "", "code": 40401, "tags": ["special;chars", "{braces}"]},
+  {"id": "T08", "name": "helen", "email": "helen@example.com", "description": "Normal description", "code": 200, "tags": []},
+  {"id": "T09", "name": "naïve user", "email": "naive@example.com", "description": "More unicode: naïve, résumé", "code": 404, "tags": ["résumé"]},
+  {"id": "T10", "name": "jack", "email": "jack@example.com", "description": "Multiple [brackets] and {braces}", "code": 100, "tags": ["normal"]},
+  {"id": "T11", "name": "", "email": "empty@example.com", "description": "Empty string name (not null)", "code": 301, "tags": ["empty"]},
+  {"id": "T12", "name": "lisa", "email": "lisa@example.com", "description": "Code is string-like number", "code": 404, "tags": ["four-oh-four"]},
+  {"id": "T13", "name": "mike;jones", "email": "mike@example.com", "description": "Semicolon in name", "code": 200, "tags": ["semi;colon"]},
+  {"id": "T14", "name": "nancy", "email": "nancy@example.com", "description": "Newline in desc\nSecond line", "code": 500, "tags": ["multiline"]},
+  {"id": "T15", "name": "owen", "email": "owen@example.com", "description": "Last record", "code": 100, "tags": ["final", "test"]}
+]

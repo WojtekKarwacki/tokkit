@@ -1,0 +1,296 @@
+[
+  {
+    "order_id": "ORD-001",
+    "customer": "alice johnson",
+    "date": "2024-11-15",
+    "status": "delivered",
+    "line_items": [
+      {"product": "Laptop Pro 15", "quantity": 1, "unit_price": 1299.99, "category": "electronics"},
+      {"product": "USB-C Hub", "quantity": 2, "unit_price": 49.99, "category": "electronics"}
+    ],
+    "shipping": {
+      "address": {"street": "123 Oak St", "city": "San Francisco", "state": "CA", "zip": "94102"},
+      "carrier": "FedEx",
+      "tracking_events": [
+        {"timestamp": "2024-11-15T10:00:00Z", "status": "shipped", "location": "San Francisco, CA"},
+        {"timestamp": "2024-11-16T14:00:00Z", "status": "delivered", "location": "San Francisco, CA"}
+      ]
+    },
+    "returns": []
+  },
+  {
+    "order_id": "ORD-002",
+    "customer": "bob smith",
+    "date": "2024-11-16",
+    "status": "delivered",
+    "line_items": [
+      {"product": "Ergonomic Chair", "quantity": 1, "unit_price": 599.00, "category": "furniture"},
+      {"product": "Desk Lamp", "quantity": 1, "unit_price": 79.99, "category": "furniture"}
+    ],
+    "shipping": {
+      "address": {"street": "456 Maple Ave", "city": "Los Angeles", "state": "CA", "zip": "90001"},
+      "carrier": "UPS",
+      "tracking_events": [
+        {"timestamp": "2024-11-16T09:00:00Z", "status": "shipped", "location": "Los Angeles, CA"},
+        {"timestamp": "2024-11-17T13:00:00Z", "status": "delivered", "location": "Los Angeles, CA"}
+      ]
+    },
+    "returns": [
+      {"product": "Desk Lamp", "reason": "defective", "refund_amount": 79.99}
+    ]
+  },
+  {
+    "order_id": "ORD-003",
+    "customer": "carol davis",
+    "date": "2024-11-17",
+    "status": "shipped",
+    "line_items": [
+      {"product": "Running Shoes", "quantity": 1, "unit_price": 129.99, "category": "apparel"},
+      {"product": "Sports Watch", "quantity": 1, "unit_price": 249.99, "category": "electronics"}
+    ],
+    "shipping": {
+      "address": {"street": "789 Elm Rd", "city": "Chicago", "state": "IL", "zip": "60601"},
+      "carrier": "USPS",
+      "tracking_events": [
+        {"timestamp": "2024-11-17T11:00:00Z", "status": "shipped", "location": "Chicago, IL"}
+      ]
+    },
+    "returns": []
+  },
+  {
+    "order_id": "ORD-004",
+    "customer": "dave wilson",
+    "date": "2024-11-18",
+    "status": "delivered",
+    "line_items": [
+      {"product": "Cookbook Collection", "quantity": 3, "unit_price": 24.99, "category": "books"},
+      {"product": "Kitchen Scale", "quantity": 1, "unit_price": 34.99, "category": "kitchen"}
+    ],
+    "shipping": {
+      "address": {"street": "321 Pine Blvd", "city": "Austin", "state": "TX", "zip": "73301"},
+      "carrier": "FedEx",
+      "tracking_events": [
+        {"timestamp": "2024-11-18T08:00:00Z", "status": "shipped", "location": "Austin, TX"},
+        {"timestamp": "2024-11-19T15:00:00Z", "status": "delivered", "location": "Austin, TX"}
+      ]
+    },
+    "returns": []
+  },
+  {
+    "order_id": "ORD-005",
+    "customer": "eve martinez",
+    "date": "2024-11-19",
+    "status": "delivered",
+    "line_items": [
+      {"product": "Wireless Headphones", "quantity": 1, "unit_price": 199.99, "category": "electronics"},
+      {"product": "Phone Case", "quantity": 2, "unit_price": 19.99, "category": "electronics"},
+      {"product": "Screen Protector", "quantity": 3, "unit_price": 9.99, "category": "electronics"}
+    ],
+    "shipping": {
+      "address": {"street": "654 Cedar Ln", "city": "Seattle", "state": "WA", "zip": "98101"},
+      "carrier": "UPS",
+      "tracking_events": [
+        {"timestamp": "2024-11-19T10:00:00Z", "status": "shipped", "location": "Seattle, WA"},
+        {"timestamp": "2024-11-20T16:00:00Z", "status": "delivered", "location": "Seattle, WA"}
+      ]
+    },
+    "returns": [
+      {"product": "Phone Case", "reason": "wrong color", "refund_amount": 19.99}
+    ]
+  },
+  {
+    "order_id": "ORD-006",
+    "customer": "frank lee",
+    "date": "2024-11-20",
+    "status": "delivered",
+    "line_items": [
+      {"product": "Yoga Mat", "quantity": 1, "unit_price": 49.99, "category": "fitness"},
+      {"product": "Resistance Bands", "quantity": 1, "unit_price": 29.99, "category": "fitness"},
+      {"product": "Water Bottle", "quantity": 2, "unit_price": 14.99, "category": "fitness"}
+    ],
+    "shipping": {
+      "address": {"street": "987 Birch St", "city": "Portland", "state": "OR", "zip": "97201"},
+      "carrier": "USPS",
+      "tracking_events": [
+        {"timestamp": "2024-11-20T09:00:00Z", "status": "shipped", "location": "Portland, OR"},
+        {"timestamp": "2024-11-21T14:00:00Z", "status": "delivered", "location": "Portland, OR"}
+      ]
+    },
+    "returns": []
+  },
+  {
+    "order_id": "ORD-007",
+    "customer": "grace kim",
+    "date": "2024-11-21",
+    "status": "processing",
+    "line_items": [
+      {"product": "4K Monitor", "quantity": 1, "unit_price": 449.99, "category": "electronics"},
+      {"product": "Monitor Arm", "quantity": 1, "unit_price": 89.99, "category": "furniture"}
+    ],
+    "shipping": {
+      "address": {"street": "246 Walnut Dr", "city": "San Jose", "state": "CA", "zip": "95101"},
+      "carrier": "FedEx",
+      "tracking_events": []
+    },
+    "returns": []
+  },
+  {
+    "order_id": "ORD-008",
+    "customer": "hank brown",
+    "date": "2024-11-22",
+    "status": "delivered",
+    "line_items": [
+      {"product": "Coffee Maker", "quantity": 1, "unit_price": 149.99, "category": "kitchen"},
+      {"product": "Coffee Beans 1kg", "quantity": 2, "unit_price": 18.99, "category": "grocery"},
+      {"product": "Travel Mug", "quantity": 1, "unit_price": 24.99, "category": "kitchen"}
+    ],
+    "shipping": {
+      "address": {"street": "135 Spruce Ave", "city": "Denver", "state": "CO", "zip": "80201"},
+      "carrier": "UPS",
+      "tracking_events": [
+        {"timestamp": "2024-11-22T10:00:00Z", "status": "shipped", "location": "Denver, CO"},
+        {"timestamp": "2024-11-23T12:00:00Z", "status": "in transit", "location": "Kansas City, MO"},
+        {"timestamp": "2024-11-24T15:00:00Z", "status": "delivered", "location": "Denver, CO"}
+      ]
+    },
+    "returns": [
+      {"product": "Coffee Maker", "reason": "not as described", "refund_amount": 149.99}
+    ]
+  },
+  {
+    "order_id": "ORD-009",
+    "customer": "iris chen",
+    "date": "2024-11-23",
+    "status": "shipped",
+    "line_items": [
+      {"product": "Winter Jacket", "quantity": 1, "unit_price": 189.99, "category": "apparel"},
+      {"product": "Wool Scarf", "quantity": 1, "unit_price": 39.99, "category": "apparel"},
+      {"product": "Gloves", "quantity": 1, "unit_price": 29.99, "category": "apparel"}
+    ],
+    "shipping": {
+      "address": {"street": "579 Ash Ct", "city": "Boston", "state": "MA", "zip": "02101"},
+      "carrier": "FedEx",
+      "tracking_events": [
+        {"timestamp": "2024-11-23T11:00:00Z", "status": "shipped", "location": "Boston, MA"}
+      ]
+    },
+    "returns": []
+  },
+  {
+    "order_id": "ORD-010",
+    "customer": "jack taylor",
+    "date": "2024-11-24",
+    "status": "delivered",
+    "line_items": [
+      {"product": "Bluetooth Speaker", "quantity": 1, "unit_price": 79.99, "category": "electronics"},
+      {"product": "Aux Cable", "quantity": 1, "unit_price": 9.99, "category": "electronics"}
+    ],
+    "shipping": {
+      "address": {"street": "802 Hickory Way", "city": "Sacramento", "state": "CA", "zip": "95814"},
+      "carrier": "USPS",
+      "tracking_events": [
+        {"timestamp": "2024-11-24T09:00:00Z", "status": "shipped", "location": "Sacramento, CA"},
+        {"timestamp": "2024-11-25T13:00:00Z", "status": "delivered", "location": "Sacramento, CA"}
+      ]
+    },
+    "returns": []
+  },
+  {
+    "order_id": "ORD-011",
+    "customer": "kate nguyen",
+    "date": "2024-11-25",
+    "status": "cancelled",
+    "line_items": [
+      {"product": "Standing Desk", "quantity": 1, "unit_price": 699.99, "category": "furniture"},
+      {"product": "Cable Management Kit", "quantity": 1, "unit_price": 19.99, "category": "furniture"}
+    ],
+    "shipping": {
+      "address": {"street": "413 Poplar Rd", "city": "Phoenix", "state": "AZ", "zip": "85001"},
+      "carrier": "UPS",
+      "tracking_events": []
+    },
+    "returns": []
+  },
+  {
+    "order_id": "ORD-012",
+    "customer": "leo garcia",
+    "date": "2024-11-26",
+    "status": "delivered",
+    "line_items": [
+      {"product": "Python Crash Course", "quantity": 1, "unit_price": 39.99, "category": "books"},
+      {"product": "Mechanical Keyboard", "quantity": 1, "unit_price": 159.99, "category": "electronics"},
+      {"product": "Mouse Pad XL", "quantity": 1, "unit_price": 19.99, "category": "electronics"}
+    ],
+    "shipping": {
+      "address": {"street": "267 Magnolia Blvd", "city": "Miami", "state": "FL", "zip": "33101"},
+      "carrier": "FedEx",
+      "tracking_events": [
+        {"timestamp": "2024-11-26T08:00:00Z", "status": "shipped", "location": "Miami, FL"},
+        {"timestamp": "2024-11-27T14:00:00Z", "status": "delivered", "location": "Miami, FL"}
+      ]
+    },
+    "returns": []
+  },
+  {
+    "order_id": "ORD-013",
+    "customer": "mia patel",
+    "date": "2024-11-27",
+    "status": "delivered",
+    "line_items": [
+      {"product": "Tablet 10 inch", "quantity": 1, "unit_price": 349.99, "category": "electronics"},
+      {"product": "Tablet Case", "quantity": 1, "unit_price": 29.99, "category": "electronics"},
+      {"product": "Stylus Pen", "quantity": 1, "unit_price": 59.99, "category": "electronics"}
+    ],
+    "shipping": {
+      "address": {"street": "831 Sycamore St", "city": "Oakland", "state": "CA", "zip": "94601"},
+      "carrier": "UPS",
+      "tracking_events": [
+        {"timestamp": "2024-11-27T10:00:00Z", "status": "shipped", "location": "Oakland, CA"},
+        {"timestamp": "2024-11-28T15:00:00Z", "status": "delivered", "location": "Oakland, CA"}
+      ]
+    },
+    "returns": [
+      {"product": "Stylus Pen", "reason": "not compatible", "refund_amount": 59.99}
+    ]
+  },
+  {
+    "order_id": "ORD-014",
+    "customer": "noah white",
+    "date": "2024-11-28",
+    "status": "delivered",
+    "line_items": [
+      {"product": "Cast Iron Skillet", "quantity": 1, "unit_price": 44.99, "category": "kitchen"},
+      {"product": "Cutting Board Set", "quantity": 1, "unit_price": 34.99, "category": "kitchen"},
+      {"product": "Chef Knife", "quantity": 1, "unit_price": 89.99, "category": "kitchen"},
+      {"product": "Apron", "quantity": 1, "unit_price": 19.99, "category": "apparel"}
+    ],
+    "shipping": {
+      "address": {"street": "559 Chestnut Ave", "city": "San Diego", "state": "CA", "zip": "92101"},
+      "carrier": "FedEx",
+      "tracking_events": [
+        {"timestamp": "2024-11-28T09:00:00Z", "status": "shipped", "location": "San Diego, CA"},
+        {"timestamp": "2024-11-29T13:00:00Z", "status": "delivered", "location": "San Diego, CA"}
+      ]
+    },
+    "returns": []
+  },
+  {
+    "order_id": "ORD-015",
+    "customer": "olivia reed",
+    "date": "2024-11-29",
+    "status": "shipped",
+    "line_items": [
+      {"product": "Wireless Mouse", "quantity": 1, "unit_price": 59.99, "category": "electronics"},
+      {"product": "Notebook 5-Pack", "quantity": 1, "unit_price": 12.99, "category": "office"},
+      {"product": "Pen Set", "quantity": 1, "unit_price": 8.99, "category": "office"}
+    ],
+    "shipping": {
+      "address": {"street": "744 Willow Dr", "city": "Atlanta", "state": "GA", "zip": "30301"},
+      "carrier": "USPS",
+      "tracking_events": [
+        {"timestamp": "2024-11-29T10:00:00Z", "status": "shipped", "location": "Atlanta, GA"}
+      ]
+    },
+    "returns": []
+  }
+]
