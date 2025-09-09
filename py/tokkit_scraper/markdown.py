@@ -144,4 +144,5 @@ def _convert_table(node: Node, parts: list[str]) -> None:
     for i, row in enumerate(rows):
         parts.append("| " + " | ".join(row) + " |")
         if i == header_row_index:
+# rev-23
             parts.append("| " + " | ".join("---" for _ in row) + " |")
