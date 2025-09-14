@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Python 3.12 Documentation - datetime — Basic date and time types">
+  <meta name="keywords" content="python, datetime, date, time, timedelta, documentation">
+  <title>datetime — Basic date and time types — Python 3.12.0 documentation</title>
+  <link rel="stylesheet" href="/_static/pydoc.css" type="text/css">
+  <link rel="stylesheet" href="/_static/pygments.css" type="text/css">
+  <link rel="stylesheet" href="/_static/copybutton.css" type="text/css">
+  <link rel="icon" href="/_static/py.svg" type="image/svg+xml">
+  <script src="/_static/documentation_options.js"></script>
+  <script src="/_static/doctools.js"></script>
+  <script src="/_static/sphinx_highlight.js"></script>
+  <script src="/_static/copybutton.js"></script>
+  <script src="/_static/sidebar.js"></script>
+</head>
+<body>
+  <div class="related" role="navigation" aria-label="Related">
+    <h3>Navigation</h3>
+    <ul>
+      <li class="right" style="margin-right: 10px">
+        <a href="/genindex.html" title="General Index" accesskey="I">index</a>
+      </li>
+      <li class="right">
+        <a href="/py-modindex.html" title="Python Module Index">modules</a>
+      </li>
+      <li class="right">
+        <a href="/library/zoneinfo.html" title="zoneinfo">next</a>
+      </li>
+      <li class="right">
+        <a href="/library/calendar.html" title="calendar">previous</a>
+      </li>
+      <li><img src="/_static/py.svg" alt="Python logo" style="vertical-align: middle; margin-top: -1px"></li>
+      <li><a href="/">Python</a> &#187;</li>
+      <li class="switchers">
+        <div class="language_switcher_placeholder"></div>
+        <div class="version_switcher_placeholder"></div>
+      </li>
+      <li><a href="/index.html">3.12.0 Documentation</a> &#187;</li>
+      <li><a href="/library/index.html">The Python Standard Library</a> &#187;</li>
+      <li><a href="/library/datatypes.html">Data Types</a> &#187;</li>
+      <li class="nav-item nav-item-this"><code>datetime</code> — Basic date and time types</li>
+    </ul>
+  </div>
+
+  <div class="document">
+    <div class="documentwrapper">
+      <div class="bodywrapper">
+        <div class="body" role="main">
+
+          <section id="datetime-basic-date-and-time-types">
+            <h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">datetime</span></code> — Basic date and time types</h1>
+            <p><strong>Source code:</strong> <a class="reference external" href="https://github.com/python/cpython/blob/3.12/Lib/datetime.py">Lib/datetime.py</a></p>
+            <p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">datetime</span></code> module supplies classes for manipulating dates and times.</p>
+            <p>While date and time arithmetic is supported, the focus of the implementation is on
+            efficient attribute extraction for output formatting and manipulation.</p>
+
+            <div class="admonition tip">
+              <p class="admonition-title">Tip</p>
+              <p>The <a class="reference external" href="https://dateutil.readthedocs.io/en/stable/">dateutil package</a>
+              provides powerful extensions to the standard <code>datetime</code> module.</p>
+            </div>
+
+            <section id="aware-and-naive-objects">
+              <h2>Aware and Naive Objects</h2>
+              <p>Date and time objects may be categorized as <em>aware</em> or <em>naive</em> depending on
+              whether or not they include timezone information.</p>
+              <p>An <strong>aware</strong> object represents a specific moment in time that is not open to
+              interpretation. An aware object <code>t</code> knows its UTC offset via <code>t.utcoffset()</code>,
+              and its <code>t.dst()</code> and <code>t.tzname()</code> methods.</p>
+              <p>A <strong>naive</strong> object does not contain enough information to unambiguously locate
+              itself relative to other date/time objects. Naive objects are easy to understand
+              and to work with, at the cost of ignoring some aspects of reality.</p>
+            </section>
+
+            <section id="constants">
+              <h2>Constants</h2>
+              <p>The <code>datetime</code> module exports the following constants:</p>
+              <dl class="py data">
+                <dt class="sig sig-object py" id="datetime.MINYEAR">
+                  <span class="sig-prename descclassname">datetime.</span><span class="sig-name descname">MINYEAR</span>
+                </dt>
+                <dd><p>The smallest year number allowed in a <code>date</code> or <code>datetime</code> object. <code>MINYEAR</code> is <code>1</code>.</p></dd>
+                <dt class="sig sig-object py" id="datetime.MAXYEAR">
+                  <span class="sig-prename descclassname">datetime.</span><span class="sig-name descname">MAXYEAR</span>
+                </dt>
+                <dd><p>The largest year number allowed in a <code>date</code> or <code>datetime</code> object. <code>MAXYEAR</code> is <code>9999</code>.</p></dd>
+              </dl>
+            </section>
+
+            <section id="available-types">
+              <h2>Available Types</h2>
+
+              <section id="timedelta-objects">
+                <h3>timedelta Objects</h3>
+                <p>A <code>timedelta</code> object represents a duration, the difference between two dates or times.</p>
+                <p class="rubric">Constructor:</p>
+                <pre><code class="language-python">class datetime.timedelta(days=0, seconds=0, microseconds=0,
+                          milliseconds=0, minutes=0, hours=0, weeks=0)</code></pre>
+                <p>All arguments are optional and default to <code>0</code>. Arguments may be ints or floats,
+                and may be positive or negative.</p>
+                <p>Only <em>days</em>, <em>seconds</em> and <em>microseconds</em> are stored internally. Arguments are
+                converted to those units:</p>
+                <ul>
+                  <li>A millisecond is converted to 1000 microseconds.</li>
+                  <li>A minute is converted to 60 seconds.</li>
+                  <li>An hour is converted to 3600 seconds.</li>
+                  <li>A week is converted to 7 days.</li>
+                </ul>
+                <p>and days, seconds and microseconds are then normalized so that the representation is unique,
+                with:</p>
+                <ul>
+                  <li><code>0 &lt;= microseconds &lt; 1000000</code></li>
+                  <li><code>0 &lt;= seconds &lt; 86400</code> (the number of seconds in one day)</li>
+                  <li><code>-999999999 &lt;= days &lt;= 999999999</code></li>
+                </ul>
+
+                <p>Example usage:</p>
+                <pre><code class="language-python">&gt;&gt;&gt; from datetime import timedelta
+&gt;&gt;&gt; delta = timedelta(days=50, seconds=27, microseconds=10, milliseconds=29000,
+...                   minutes=5, hours=8, weeks=2)
+&gt;&gt;&gt; delta
+datetime.timedelta(days=64, seconds=29156, microseconds=10)
+&gt;&gt;&gt; delta.total_seconds()
+5558756.00001</code></pre>
+              </section>
+
+              <section id="date-objects">
+                <h3>date Objects</h3>
+                <p>A <code>date</code> object represents a date (year, month and day) in an idealized calendar,
+                the current Gregorian calendar indefinitely extended in both directions.</p>
+                <p class="rubric">Constructor:</p>
+                <pre><code class="language-python">class datetime.date(year, month, day)</code></pre>
+                <p>All arguments are required. Arguments must satisfy the following constraints:</p>
+                <ul>
+                  <li><code>MINYEAR &lt;= year &lt;= MAXYEAR</code></li>
+                  <li><code>1 &lt;= month &lt;= 12</code></li>
+                  <li><code>1 &lt;= day &lt;= number of days in the given month and year</code></li>
+                </ul>
+              </section>
+            </section>
+
+            <section id="strftime-strptime-behavior">
+              <h2>strftime() and strptime() Behavior</h2>
+              <p><code>date</code>, <code>datetime</code>, and <code>time</code> objects all support a <code>strftime(format)</code> method,
+              to create a string representing the time under the control of an explicit format string.</p>
+
+              <div class="admonition warning">
+                <p class="admonition-title">Warning</p>
+                <p>The exact range of years for which <code>strftime()</code> works also varies across platforms.
+                Regardless of platform, years before 1900 should not be used.</p>
+              </div>
+
+              <p>The following table shows all the directive codes:</p>
+              <table class="docutils align-default">
+                <thead>
+                  <tr>
+                    <th>Directive</th>
+                    <th>Meaning</th>
+                    <th>Example</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>%a</code></td><td>Weekday abbreviated name</td><td>Sun, Mon, …, Sat</td></tr>
+                  <tr><td><code>%A</code></td><td>Weekday full name</td><td>Sunday, Monday, …, Saturday</td></tr>
+                  <tr><td><code>%d</code></td><td>Day of month as zero-padded decimal</td><td>01, 02, …, 31</td></tr>
+                  <tr><td><code>%m</code></td><td>Month as zero-padded decimal</td><td>01, 02, …, 12</td></tr>
+                  <tr><td><code>%Y</code></td><td>Year with century</td><td>0001, 0002, …, 9999</td></tr>
+                  <tr><td><code>%H</code></td><td>Hour (24-hour clock) zero-padded</td><td>00, 01, …, 23</td></tr>
+                  <tr><td><code>%M</code></td><td>Minute zero-padded</td><td>00, 01, …, 59</td></tr>
+                  <tr><td><code>%S</code></td><td>Second zero-padded</td><td>00, 01, …, 59</td></tr>
+                  <tr><td><code>%f</code></td><td>Microsecond zero-padded</td><td>000000, 000001, …, 999999</td></tr>
+                  <tr><td><code>%z</code></td><td>UTC offset in the form ±HHMM[SS[.ffffff]]</td><td>(empty), +0000, -0400, +1030</td></tr>
+                </tbody>
+              </table>
+            </section>
+
+          </section>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="sphinxsidebar" role="navigation" aria-label="Main">
+      <div class="sphinxsidebarwrapper">
+        <h3><a href="/">Table of Contents</a></h3>
+        <form class="search" action="/search.html" method="get">
+          <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search docs">
+          <input type="submit" value="Go">
+          <input type="hidden" name="check_keywords" value="yes">
+          <input type="hidden" name="area" value="default">
+        </form>
+        <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+        <ul class="current">
+          <li class="toctree-l1"><a class="reference internal" href="#aware-and-naive-objects">Aware and Naive Objects</a></li>
+          <li class="toctree-l1"><a class="reference internal" href="#constants">Constants</a></li>
+          <li class="toctree-l1 current"><a class="reference internal" href="#available-types">Available Types</a>
+            <ul>
+              <li class="toctree-l2"><a href="#timedelta-objects">timedelta Objects</a></li>
+              <li class="toctree-l2"><a href="#date-objects">date Objects</a></li>
+            </ul>
+          </li>
+          <li class="toctree-l1"><a class="reference internal" href="#strftime-strptime-behavior">strftime() and strptime() Behavior</a></li>
+        </ul>
+        <div id="searchbox" style="display: none" role="search">
+          <h3 id="searchlabel">Quick search</h3>
+        </div>
+        <div class="relations">
+          <h3>Related Topics</h3>
+          <ul>
+            <li><a href="/library/calendar.html">Previous: calendar</a></li>
+            <li><a href="/library/zoneinfo.html">Next: zoneinfo</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="clearer"></div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-content">
+      &copy; Copyright 2001-2023, Python Software Foundation.<br>
+      This page is licensed under the Python Software Foundation License Version 2.<br>
+      Examples, recipes, and other code in the documentation are additionally licensed under the Zero Clause BSD License.<br>
+      <a href="/license.html">Legal Information</a> |
+      <a href="https://www.python.org/psf/">Python Software Foundation</a> |
+      <a href="https://bugs.python.org/">Bug Tracker</a> |
+      Last updated on Nov 02, 2023.
+      <a href="/bugs.html">Found a bug</a>?<br>
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    </div>
+  </div>
+
+  <script>
+    // Google Analytics
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-56128122-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+  <script>
+    // Version switcher
+    (function() {
+      var currentVersion = '3.12';
+      var versions = ['3.12', '3.11', '3.10', '3.9', '3.8', '3.7', '2.7'];
+      var switcher = document.querySelector('.version_switcher_placeholder');
+      if (switcher) {
+        var select = document.createElement('select');
+        versions.forEach(function(v) {
+          var opt = document.createElement('option');
+          opt.value = 'https://docs.python.org/' + v + '/';
+          opt.text = 'Python ' + v;
+          if (v === currentVersion) opt.selected = true;
+          select.appendChild(opt);
+        });
+        select.onchange = function() { window.location = this.value; };
+        switcher.appendChild(select);
+      }
+    })();
+  </script>
+</body>
+</html>
