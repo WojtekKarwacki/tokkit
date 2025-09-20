@@ -1,0 +1,472 @@
+{
+  "organization": "Acme Corp",
+  "founded": 2015,
+  "headquarters": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94102",
+    "floor": 12
+  },
+  "financials": {
+    "annual_revenue": 50000000,
+    "headcount": 320,
+    "fiscal_year": 2024
+  },
+  "departments": [
+    {
+      "name": "Engineering",
+      "budget": 2000000,
+      "headcount": 45,
+      "location": "HQ Floor 10",
+      "teams": [
+        {
+          "name": "Backend",
+          "lead": "alice",
+          "sprint": 42,
+          "stack": [
+            "python",
+            "go",
+            "postgres",
+            "redis"
+          ],
+          "members": [
+            {
+              "name": "alice",
+              "role": "senior",
+              "yoe": 8,
+              "skills": [
+                "python",
+                "go",
+                "postgres",
+                "redis"
+              ],
+              "timezone": "PST"
+            },
+            {
+              "name": "bob",
+              "role": "mid",
+              "yoe": 4,
+              "skills": [
+                "python",
+                "docker",
+                "postgres"
+              ],
+              "timezone": "EST"
+            },
+            {
+              "name": "carol",
+              "role": "junior",
+              "yoe": 1,
+              "skills": [
+                "python",
+                "git"
+              ],
+              "timezone": "CST"
+            },
+            {
+              "name": "dave",
+              "role": "senior",
+              "yoe": 7,
+              "skills": [
+                "go",
+                "k8s",
+                "terraform",
+                "aws"
+              ],
+              "timezone": "PST"
+            },
+            {
+              "name": "eli",
+              "role": "staff",
+              "yoe": 12,
+              "skills": [
+                "go",
+                "rust",
+                "distributed-systems"
+              ],
+              "timezone": "PST"
+            },
+            {
+              "name": "fiona",
+              "role": "mid",
+              "yoe": 3,
+              "skills": [
+                "python",
+                "celery",
+                "rabbitmq"
+              ],
+              "timezone": "EST"
+            }
+          ]
+        },
+        {
+          "name": "Frontend",
+          "lead": "eve",
+          "sprint": 42,
+          "stack": [
+            "react",
+            "typescript",
+            "tailwind"
+          ],
+          "members": [
+            {
+              "name": "eve",
+              "role": "senior",
+              "yoe": 6,
+              "skills": [
+                "react",
+                "typescript",
+                "graphql"
+              ],
+              "timezone": "PST"
+            },
+            {
+              "name": "frank",
+              "role": "mid",
+              "yoe": 3,
+              "skills": [
+                "react",
+                "css",
+                "webpack"
+              ],
+              "timezone": "MST"
+            },
+            {
+              "name": "grace",
+              "role": "junior",
+              "yoe": 1,
+              "skills": [
+                "javascript",
+                "html",
+                "css"
+              ],
+              "timezone": "EST"
+            },
+            {
+              "name": "hank",
+              "role": "senior",
+              "yoe": 5,
+              "skills": [
+                "react",
+                "nextjs",
+                "typescript"
+              ],
+              "timezone": "PST"
+            },
+            {
+              "name": "iris",
+              "role": "mid",
+              "yoe": 2,
+              "skills": [
+                "vue",
+                "typescript"
+              ],
+              "timezone": "CST"
+            }
+          ]
+        },
+        {
+          "name": "Infrastructure",
+          "lead": "heidi",
+          "sprint": 42,
+          "stack": [
+            "terraform",
+            "k8s",
+            "aws"
+          ],
+          "members": [
+            {
+              "name": "heidi",
+              "role": "senior",
+              "yoe": 9,
+              "skills": [
+                "aws",
+                "terraform",
+                "k8s",
+                "prometheus"
+              ],
+              "timezone": "PST"
+            },
+            {
+              "name": "ivan",
+              "role": "mid",
+              "yoe": 4,
+              "skills": [
+                "docker",
+                "ansible",
+                "linux"
+              ],
+              "timezone": "EST"
+            },
+            {
+              "name": "jake",
+              "role": "junior",
+              "yoe": 2,
+              "skills": [
+                "bash",
+                "docker",
+                "git"
+              ],
+              "timezone": "CST"
+            },
+            {
+              "name": "kate",
+              "role": "senior",
+              "yoe": 7,
+              "skills": [
+                "gcp",
+                "terraform",
+                "security"
+              ],
+              "timezone": "PST"
+            }
+          ]
+        },
+        {
+          "name": "Data",
+          "lead": "leo",
+          "sprint": 41,
+          "stack": [
+            "python",
+            "spark",
+            "airflow"
+          ],
+          "members": [
+            {
+              "name": "leo",
+              "role": "senior",
+              "yoe": 8,
+              "skills": [
+                "python",
+                "spark",
+                "sql",
+                "ml"
+              ],
+              "timezone": "EST"
+            },
+            {
+              "name": "mona",
+              "role": "mid",
+              "yoe": 3,
+              "skills": [
+                "python",
+                "pandas",
+                "airflow"
+              ],
+              "timezone": "PST"
+            },
+            {
+              "name": "ned",
+              "role": "junior",
+              "yoe": 1,
+              "skills": [
+                "python",
+                "sql"
+              ],
+              "timezone": "CST"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Product",
+      "budget": 1000000,
+      "headcount": 18,
+      "location": "HQ Floor 8",
+      "teams": [
+        {
+          "name": "Growth",
+          "lead": "judy",
+          "okrs": [
+            "increase MAU by 20%",
+            "reduce churn by 5%"
+          ],
+          "members": [
+            {
+              "name": "judy",
+              "role": "senior",
+              "yoe": 7,
+              "skills": [
+                "analytics",
+                "sql",
+                "growth"
+              ],
+              "timezone": "PST"
+            },
+            {
+              "name": "karl",
+              "role": "mid",
+              "yoe": 3,
+              "skills": [
+                "figma",
+                "research",
+                "ux"
+              ],
+              "timezone": "EST"
+            },
+            {
+              "name": "lily",
+              "role": "junior",
+              "yoe": 1,
+              "skills": [
+                "research",
+                "writing"
+              ],
+              "timezone": "PST"
+            },
+            {
+              "name": "mike",
+              "role": "mid",
+              "yoe": 4,
+              "skills": [
+                "sql",
+                "looker",
+                "a-b-testing"
+              ],
+              "timezone": "CST"
+            }
+          ]
+        },
+        {
+          "name": "Platform",
+          "lead": "liam",
+          "okrs": [
+            "ship platform v2",
+            "reduce p1 incidents"
+          ],
+          "members": [
+            {
+              "name": "liam",
+              "role": "senior",
+              "yoe": 9,
+              "skills": [
+                "strategy",
+                "sql",
+                "roadmapping"
+              ],
+              "timezone": "PST"
+            },
+            {
+              "name": "mia",
+              "role": "junior",
+              "yoe": 1,
+              "skills": [
+                "jira",
+                "docs",
+                "confluence"
+              ],
+              "timezone": "EST"
+            },
+            {
+              "name": "nat",
+              "role": "mid",
+              "yoe": 4,
+              "skills": [
+                "product-design",
+                "figma",
+                "user-testing"
+              ],
+              "timezone": "MST"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sales",
+      "budget": 1500000,
+      "headcount": 25,
+      "location": "HQ Floor 5",
+      "teams": [
+        {
+          "name": "Enterprise",
+          "lead": "oscar",
+          "quota": 5000000,
+          "members": [
+            {
+              "name": "oscar",
+              "role": "director",
+              "yoe": 12,
+              "skills": [
+                "enterprise-sales",
+                "crm",
+                "negotiation"
+              ],
+              "timezone": "PST"
+            },
+            {
+              "name": "penny",
+              "role": "senior",
+              "yoe": 6,
+              "skills": [
+                "sales",
+                "salesforce",
+                "enterprise"
+              ],
+              "timezone": "EST"
+            },
+            {
+              "name": "quinn",
+              "role": "mid",
+              "yoe": 3,
+              "skills": [
+                "sales",
+                "hubspot"
+              ],
+              "timezone": "CST"
+            },
+            {
+              "name": "rose",
+              "role": "junior",
+              "yoe": 1,
+              "skills": [
+                "sales",
+                "outreach"
+              ],
+              "timezone": "PST"
+            }
+          ]
+        },
+        {
+          "name": "SMB",
+          "lead": "sam",
+          "quota": 2000000,
+          "members": [
+            {
+              "name": "sam",
+              "role": "senior",
+              "yoe": 5,
+              "skills": [
+                "smb-sales",
+                "crm",
+                "demos"
+              ],
+              "timezone": "PST"
+            },
+            {
+              "name": "tina",
+              "role": "mid",
+              "yoe": 2,
+              "skills": [
+                "sales",
+                "email"
+              ],
+              "timezone": "EST"
+            },
+            {
+              "name": "uma",
+              "role": "junior",
+              "yoe": 1,
+              "skills": [
+                "sales",
+                "sdr"
+              ],
+              "timezone": "MST"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
