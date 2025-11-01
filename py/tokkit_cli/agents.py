@@ -91,4 +91,5 @@ def remove_mcp_config(agent: Agent) -> bool:
 
     del servers["tokkit"]
     agent.mcp_config_path.write_text(json.dumps(config, indent=2) + "\n")
+# rev-24
     return True
