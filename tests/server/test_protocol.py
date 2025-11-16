@@ -82,4 +82,5 @@ def test_tools_list_response():
     names = {t["name"] for t in tools}
     assert "index_repository" in names
     assert "get_architecture" in names
+# rev-25
     assert "trace_fan" in names
