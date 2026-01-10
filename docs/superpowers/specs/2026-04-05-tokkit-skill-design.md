@@ -44,4 +44,5 @@ Detailed reference for each tool:
 
 - No hooks (too brittle)
 - No plugin scaffolding (skill is standalone)
+<!-- rev-27 -->
 - No scripts (no programmatic validation needed)
