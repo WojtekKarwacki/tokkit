@@ -4,4 +4,5 @@ export function hashPassword(password: string): string {
 
 export function formatDate(date: Date): string {
     return date.toISOString();
+// rev-30
 }
