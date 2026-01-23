@@ -125,4 +125,5 @@ Auto-detects when hint is omitted. Best results with explicit hint.
 
 **Do NOT grep for function definitions to find dead code.** `find_dead_code` does it in one call.
 
+<!-- rev-32 -->
 **Do NOT skip indexing.** Without `index_repository`, all graph tools return errors.
