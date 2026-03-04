@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A deep dive into Python async/await patterns and best practices for writing concurrent code.">
+  <meta name="author" content="Jane Developer">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Mastering Python Async/Await: Patterns and Pitfalls">
+  <meta property="og:description" content="A deep dive into Python async/await patterns and best practices for writing concurrent code.">
+  <meta property="og:image" content="https://devblog.example.com/img/async-python.png">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Mastering Python Async/Await: Patterns and Pitfalls">
+  <meta name="twitter:description" content="A deep dive into Python async/await patterns and best practices.">
+  <title>Mastering Python Async/Await: Patterns and Pitfalls | DevBlog</title>
+  <link rel="stylesheet" href="/css/main.min.css">
+  <link rel="stylesheet" href="/css/syntax.min.css">
+  <link rel="stylesheet" href="/css/ads.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <script src="/js/vendor/jquery-3.7.1.min.js"></script>
+  <script src="/js/vendor/bootstrap.bundle.min.js" defer></script>
+  <script src="/js/app.min.js" defer></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890" crossorigin="anonymous"></script>
+</head>
+<body class="post-page">
+
+  <!-- Cookie banner -->
+  <div id="cookie-banner" class="cookie-banner" style="position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;padding:16px;z-index:9999;display:flex;align-items:center;justify-content:space-between;">
+    <p style="margin:0;">We use cookies to improve your experience. <a href="/privacy" style="color:#4fc3f7;">Learn more</a></p>
+    <div>
+      <button onclick="document.getElementById('cookie-banner').style.display='none'" style="background:#4fc3f7;border:none;padding:8px 16px;cursor:pointer;border-radius:4px;">Accept</button>
+      <button onclick="document.getElementById('cookie-banner').style.display='none'" style="background:transparent;border:1px solid #fff;color:#fff;padding:8px 16px;cursor:pointer;border-radius:4px;margin-left:8px;">Decline</button>
+    </div>
+  </div>
+
+  <!-- Newsletter popup -->
+  <div id="newsletter-popup" class="modal fade" tabindex="-1" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9000;align-items:center;justify-content:center;">
+    <div style="background:#fff;max-width:480px;padding:32px;border-radius:8px;margin:auto;">
+      <button onclick="document.getElementById('newsletter-popup').style.display='none'" style="float:right;border:none;background:none;font-size:20px;cursor:pointer;">&times;</button>
+      <h3>Get the latest posts in your inbox</h3>
+      <p>Join 15,000+ developers who get weekly articles on Python, DevOps, and more.</p>
+      <input type="email" placeholder="your@email.com" style="width:100%;padding:10px;margin-bottom:12px;border:1px solid #ccc;border-radius:4px;">
+      <button style="width:100%;padding:12px;background:#4a6cf7;color:#fff;border:none;border-radius:4px;cursor:pointer;">Subscribe</button>
+    </div>
+  </div>
+
+  <!-- Site header -->
+  <header class="site-header">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <img src="/img/logo.svg" alt="DevBlog" height="32">
+          DevBlog
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="/python">Python</a></li>
+            <li class="nav-item"><a class="nav-link" href="/javascript">JavaScript</a></li>
+            <li class="nav-item"><a class="nav-link" href="/devops">DevOps</a></li>
+            <li class="nav-item"><a class="nav-link" href="/tutorials">Tutorials</a></li>
+            <li class="nav-item"><a class="nav-link" href="/tools">Tools</a></li>
+          </ul>
+          <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search posts..." aria-label="Search">
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container mt-4">
+    <div class="row">
+
+      <!-- Main content -->
+      <main class="col-lg-8" role="main">
+
+        <!-- Top ad -->
+        <div class="ad-container text-center mb-4" aria-label="Advertisement">
+          <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-1234567890" data-ad-slot="1234567890"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <article class="post" itemscope itemtype="https://schema.org/BlogPosting">
+          <header class="post-header mb-4">
+            <div class="post-meta text-muted mb-2">
+              <span><a href="/category/python" class="text-muted">Python</a></span> &bull;
+              <time datetime="2024-03-15" itemprop="datePublished">March 15, 2024</time> &bull;
+              <span>12 min read</span> &bull;
+              <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+                By <a href="/author/jane" itemprop="name">Jane Developer</a>
+              </span>
+            </div>
+
+            <h1 itemprop="headline">Mastering Python Async/Await: Patterns and Pitfalls</h1>
+
+            <p class="lead">Python's async/await syntax has matured significantly since its introduction in Python 3.5. In this guide, we'll explore practical patterns for writing efficient concurrent code and the common mistakes you should avoid.</p>
+
+            <div class="social-share mb-3">
+              <span class="me-2">Share:</span>
+              <a href="https://twitter.com/intent/tweet?url=https://devblog.example.com/python-async-patterns" class="btn btn-sm btn-outline-secondary me-1">Twitter</a>
+              <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://devblog.example.com/python-async-patterns" class="btn btn-sm btn-outline-secondary me-1">LinkedIn</a>
+              <a href="https://news.ycombinator.com/submitlink?u=https://devblog.example.com/python-async-patterns" class="btn btn-sm btn-outline-secondary">HN</a>
+            </div>
+          </header>
+
+          <div class="post-content" itemprop="articleBody">
+
+            <h2>Why Async Matters</h2>
+            <p>When building I/O-bound applications — web scrapers, API clients, database-driven services — synchronous Python forces your program to wait for each operation before starting the next. Async Python lets you overlap these waits, dramatically improving throughput without the complexity of threads or multiprocessing.</p>
+
+            <p>The key insight: <strong>async code is single-threaded but concurrent</strong>. The event loop handles many pending tasks, switching between them whenever one is waiting on I/O.</p>
+
+            <h2>Core Patterns</h2>
+
+            <h3>1. Concurrent Requests with gather()</h3>
+            <p>The most common async pattern is firing multiple coroutines concurrently and waiting for all of them:</p>
+
+            <pre><code class="language-python">import asyncio
+import aiohttp
+
+async def fetch(session, url):
+    async with session.get(url) as response:
+        return await response.json()
+
+async def fetch_all(urls):
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch(session, url) for url in urls]
+        results = await asyncio.gather(*tasks)
+    return results
+
+# Fetches 10 URLs concurrently instead of sequentially
+urls = [f"https://api.example.com/item/{i}" for i in range(10)]
+results = asyncio.run(fetch_all(urls))
+</code></pre>
+
+            <p>With synchronous requests, 10 calls at 100ms each would take ~1 second. With <code>gather()</code>, they complete in roughly 100ms — a 10x speedup.</p>
+
+            <h3>2. Semaphore for Rate Limiting</h3>
+            <p>Unconstrained concurrency can overwhelm a server or hit API rate limits. Use a semaphore:</p>
+
+            <pre><code class="language-python">async def fetch_with_limit(urls, max_concurrent=5):
+    semaphore = asyncio.Semaphore(max_concurrent)
+
+    async def bounded_fetch(session, url):
+        async with semaphore:
+            return await fetch(session, url)
+
+    async with aiohttp.ClientSession() as session:
+        tasks = [bounded_fetch(session, url) for url in urls]
+        return await asyncio.gather(*tasks)
+</code></pre>
+
+            <h3>3. Error Handling</h3>
+            <p>By default, <code>gather()</code> propagates the first exception and cancels remaining tasks. Use <code>return_exceptions=True</code> to collect all results and handle errors per-task:</p>
+
+            <pre><code class="language-python">results = await asyncio.gather(*tasks, return_exceptions=True)
+errors = [r for r in results if isinstance(r, Exception)]
+successes = [r for r in results if not isinstance(r, Exception)]
+</code></pre>
+
+            <h2>Comparison: sync vs async</h2>
+            <table class="table table-bordered">
+              <thead class="table-dark">
+                <tr>
+                  <th>Dimension</th>
+                  <th>Synchronous</th>
+                  <th>Async (asyncio)</th>
+                  <th>Threads</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>I/O-bound throughput</td>
+                  <td>Low (sequential)</td>
+                  <td>High (concurrent)</td>
+                  <td>High (concurrent)</td>
+                </tr>
+                <tr>
+                  <td>CPU-bound throughput</td>
+                  <td>Medium</td>
+                  <td>Low (single-threaded)</td>
+                  <td>Medium (GIL)</td>
+                </tr>
+                <tr>
+                  <td>Code complexity</td>
+                  <td>Low</td>
+                  <td>Medium</td>
+                  <td>High (race conditions)</td>
+                </tr>
+                <tr>
+                  <td>Memory per connection</td>
+                  <td>High (OS threads)</td>
+                  <td>Low (coroutines ~1KB)</td>
+                  <td>High (OS threads ~8MB)</td>
+                </tr>
+                <tr>
+                  <td>Debugging</td>
+                  <td>Easy</td>
+                  <td>Medium</td>
+                  <td>Hard</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h2>Common Pitfalls</h2>
+
+            <blockquote class="blockquote border-start border-4 ps-4 my-4">
+              <p>The most common async mistake is calling a sync blocking function inside a coroutine. This blocks the entire event loop.</p>
+              <footer class="blockquote-footer">PyCon 2023, "Async Antipatterns" talk</footer>
+            </blockquote>
+
+            <p>Watch out for these pitfalls:</p>
+            <ol>
+              <li><strong>Blocking the event loop:</strong> Never call <code>time.sleep()</code>, <code>requests.get()</code>, or any synchronous I/O inside a coroutine. Use <code>asyncio.sleep()</code> and <code>aiohttp</code> instead.</li>
+              <li><strong>Forgetting await:</strong> If you call a coroutine without <code>await</code>, it returns a coroutine object instead of executing. Python will warn you, but the bug can be subtle.</li>
+              <li><strong>Creating tasks too early:</strong> <code>asyncio.create_task()</code> schedules immediately. Don't create tasks in module scope before the event loop starts.</li>
+              <li><strong>Not cancelling tasks on shutdown:</strong> Leaked tasks consume resources and can cause warnings. Always cancel and await pending tasks on exit.</li>
+            </ol>
+
+            <h3>The asyncio.run() entry point</h3>
+            <p>Since Python 3.7, <code>asyncio.run()</code> is the recommended way to start your async program. It creates a new event loop, runs your coroutine, and cleans up properly:</p>
+
+            <pre><code class="language-python">async def main():
+    # Your async code here
+    results = await fetch_all(urls)
+    for result in results:
+        process(result)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+</code></pre>
+
+          </div>
+
+          <footer class="post-footer mt-5">
+            <div class="social-share border-top border-bottom py-3 my-3">
+              <strong>Found this useful? Share it:</strong>
+              <a href="https://twitter.com/intent/tweet?url=https://devblog.example.com/python-async-patterns&text=Mastering+Python+Async%2FAwait" class="btn btn-sm btn-outline-secondary me-1 mt-1">Twitter</a>
+              <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://devblog.example.com/python-async-patterns" class="btn btn-sm btn-outline-secondary me-1 mt-1">LinkedIn</a>
+              <a href="https://news.ycombinator.com/submitlink?u=https://devblog.example.com/python-async-patterns&t=Mastering+Python+Async%2FAwait" class="btn btn-sm btn-outline-secondary mt-1">Hacker News</a>
+            </div>
+
+            <div class="tags mt-3">
+              <strong>Tags:</strong>
+              <a href="/tag/python" class="badge text-bg-secondary me-1">python</a>
+              <a href="/tag/async" class="badge text-bg-secondary me-1">async</a>
+              <a href="/tag/asyncio" class="badge text-bg-secondary me-1">asyncio</a>
+              <a href="/tag/concurrency" class="badge text-bg-secondary me-1">concurrency</a>
+              <a href="/tag/performance" class="badge text-bg-secondary me-1">performance</a>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Mid-article ad -->
+        <div class="ad-container text-center my-5" aria-label="Advertisement">
+          <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-1234567890" data-ad-slot="9876543210"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <!-- Related posts -->
+        <section class="related-posts mt-5">
+          <h3 class="mb-3">Related Posts</h3>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title"><a href="/python-generators" class="stretched-link text-decoration-none">Understanding Python Generators</a></h5>
+                  <p class="card-text text-muted small">Lazy evaluation and memory-efficient iteration patterns.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title"><a href="/fastapi-tutorial" class="stretched-link text-decoration-none">Building APIs with FastAPI</a></h5>
+                  <p class="card-text text-muted small">FastAPI is built on Starlette and makes async APIs a breeze.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title"><a href="/aiohttp-guide" class="stretched-link text-decoration-none">aiohttp Complete Guide</a></h5>
+                  <p class="card-text text-muted small">The go-to async HTTP client/server library for Python.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h5 class="card-title"><a href="/python-threading" class="stretched-link text-decoration-none">Threads vs Processes vs Async</a></h5>
+                  <p class="card-text text-muted small">When to use which concurrency primitive in Python.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Comments section -->
+        <section class="comments mt-5" id="comments">
+          <h3 class="mb-3">Comments (14)</h3>
+          <div id="disqus_thread">
+            <div class="comment mb-3 p-3 border rounded">
+              <div class="d-flex align-items-center mb-2">
+                <img src="/img/avatars/user1.jpg" alt="user1" class="rounded-circle me-2" width="32" height="32">
+                <strong>pythonista99</strong>
+                <span class="text-muted ms-2 small">2 days ago</span>
+              </div>
+              <p>Great explanation! One thing I'd add: asyncio.TaskGroup (Python 3.11+) is even cleaner than gather() for structured concurrency.</p>
+            </div>
+            <div class="comment mb-3 p-3 border rounded">
+              <div class="d-flex align-items-center mb-2">
+                <img src="/img/avatars/user2.jpg" alt="user2" class="rounded-circle me-2" width="32" height="32">
+                <strong>devloper42</strong>
+                <span class="text-muted ms-2 small">1 day ago</span>
+              </div>
+              <p>The semaphore example is exactly what I needed for my scraper. Thanks!</p>
+            </div>
+          </div>
+          <script>
+            var disqus_config = function() { this.page.url = 'https://devblog.example.com/python-async-patterns'; this.page.identifier = 'python-async-patterns-2024'; };
+            (function() { var d = document, s = d.createElement('script'); s.src = 'https://devblog.disqus.com/embed.js'; s.setAttribute('data-timestamp', +new Date()); (d.head || d.body).appendChild(s); })();
+          </script>
+        </section>
+
+      </main>
+
+      <!-- Sidebar -->
+      <aside class="col-lg-4" role="complementary">
+
+        <!-- Sidebar ad -->
+        <div class="ad-container text-center mb-4" aria-label="Advertisement">
+          <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-1234567890" data-ad-slot="5555666677"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header"><strong>About the Author</strong></div>
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+              <img src="/img/avatars/jane.jpg" alt="Jane Developer" class="rounded-circle me-3" width="64" height="64">
+              <div>
+                <strong>Jane Developer</strong><br>
+                <small class="text-muted">Senior Software Engineer</small>
+              </div>
+            </div>
+            <p class="small">Python enthusiast with 10+ years building distributed systems. Speaker at PyCon and EuroPython.</p>
+            <div>
+              <a href="https://twitter.com/janedev" class="btn btn-sm btn-outline-secondary me-1">Twitter</a>
+              <a href="https://github.com/janedev" class="btn btn-sm btn-outline-secondary">GitHub</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header"><strong>Popular Posts</strong></div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><a href="/python-typing" class="text-decoration-none">Python Type Hints in 2024</a></li>
+            <li class="list-group-item"><a href="/docker-python" class="text-decoration-none">Dockerizing Python Applications</a></li>
+            <li class="list-group-item"><a href="/postgresql-asyncpg" class="text-decoration-none">PostgreSQL with asyncpg</a></li>
+            <li class="list-group-item"><a href="/python-testing" class="text-decoration-none">Testing Async Code with pytest</a></li>
+            <li class="list-group-item"><a href="/pydantic-v2" class="text-decoration-none">Pydantic v2: What's New</a></li>
+          </ul>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header"><strong>Categories</strong></div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between"><a href="/python">Python</a><span class="badge text-bg-secondary">143</span></li>
+            <li class="list-group-item d-flex justify-content-between"><a href="/javascript">JavaScript</a><span class="badge text-bg-secondary">87</span></li>
+            <li class="list-group-item d-flex justify-content-between"><a href="/devops">DevOps</a><span class="badge text-bg-secondary">62</span></li>
+            <li class="list-group-item d-flex justify-content-between"><a href="/databases">Databases</a><span class="badge text-bg-secondary">41</span></li>
+          </ul>
+        </div>
+
+        <!-- Sidebar ad 2 -->
+        <div class="ad-container text-center mb-4" aria-label="Advertisement">
+          <ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-1234567890" data-ad-slot="8888999900"></ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <footer class="footer bg-dark text-white mt-5 py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <h5>DevBlog</h5>
+          <p class="small text-white-50">Practical guides for developers who ship.</p>
+        </div>
+        <div class="col-md-3">
+          <h6>Topics</h6>
+          <ul class="list-unstyled small">
+            <li><a href="/python" class="text-white-50">Python</a></li>
+            <li><a href="/javascript" class="text-white-50">JavaScript</a></li>
+            <li><a href="/devops" class="text-white-50">DevOps</a></li>
+            <li><a href="/databases" class="text-white-50">Databases</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3">
+          <h6>Company</h6>
+          <ul class="list-unstyled small">
+            <li><a href="/about" class="text-white-50">About</a></li>
+            <li><a href="/advertise" class="text-white-50">Advertise</a></li>
+            <li><a href="/contact" class="text-white-50">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3">
+          <h6>Legal</h6>
+          <ul class="list-unstyled small">
+            <li><a href="/privacy" class="text-white-50">Privacy Policy</a></li>
+            <li><a href="/terms" class="text-white-50">Terms of Service</a></li>
+            <li><a href="/cookies" class="text-white-50">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-top border-secondary mt-3 pt-3 text-center text-white-50 small">
+        &copy; 2024 DevBlog Media Inc. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ABC123"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ABC123');
+  </script>
+  <script>
+    // Heap analytics
+    window.heap=window.heap||[],heap.appid="1234567890";
+    heap.load=function(e,t){window.heap.appid=e,window.heap.config=t=t||{};var r=document.createElement("script");r.type="text/javascript",r.async=!0,r.src="https://cdn.heapanalytics.com/js/heap-"+e+".js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(r,a);for(var n=function(e){return function(){heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","resetIdentity","removeEventProperty","setEventProperties","track","unsetEventProperty"],o=0;o<p.length;o++)heap[p[o]]=n(p[o])};
+    heap.load("1234567890");
+  </script>
+  <script>
+    // Intercom
+    window.intercomSettings = { app_id: "abc12345", hide_default_launcher: true };
+    (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/abc12345';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
+  </script>
+</body>
+</html>
