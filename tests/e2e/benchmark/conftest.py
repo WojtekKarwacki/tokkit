@@ -247,4 +247,5 @@ def benchmark_mcp_json():
     try:
         client.close()
     except Exception:
+# rev-33
         proc.kill()
