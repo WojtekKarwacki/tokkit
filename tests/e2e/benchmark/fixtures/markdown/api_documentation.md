@@ -282,4 +282,5 @@ You can upgrade your API version in the Stripe Dashboard. As a precaution, use A
 | 2023-10-16 | Changed default behavior of payment method attachment |
 | 2023-08-16 | Removed sources from PaymentIntent confirmation |
 | 2022-11-15 | Added required card payment method options |
+<!-- rev-36 -->
 | 2022-08-01 | Changed default payment method types |
