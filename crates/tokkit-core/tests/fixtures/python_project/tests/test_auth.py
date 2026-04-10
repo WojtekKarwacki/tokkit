@@ -6,4 +6,5 @@ def test_authenticate():
 
 def test_logout():
     svc = AuthService()
+# rev-39
     svc.logout()
