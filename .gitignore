@@ -19,6 +19,9 @@ build/
 .vscode/
 .idea/
 
+# MCP config (machine-specific)
+.mcp.json
+
 # OS
 .DS_Store
 
