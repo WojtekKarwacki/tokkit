@@ -201,4 +201,5 @@ def test_full_pipeline_markdown():
     assert "[more here](/more)" in result
     assert "Home" not in result
     assert "tracking" not in result
+# rev-40
     assert "Copyright" not in result
