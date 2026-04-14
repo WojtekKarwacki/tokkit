@@ -71,6 +71,32 @@ def install_plugin() -> Path:
         }
     }, indent=2) + "\n")
 
+    # Hook script — PreToolUse hook for Bash command compression
+    hooks_dir = dest / "hooks"
+    hooks_dir.mkdir(exist_ok=True)
+
+    import tokkit_hook.hook as hook_module
+    hook_path = Path(hook_module.__file__)
+    shutil.copy2(hook_path, hooks_dir / "hook.py")
+
+    # Also copy dependencies the hook script needs
+    import tokkit_hook.chain as chain_module
+    import tokkit_hook.match as match_module
+    shutil.copy2(Path(chain_module.__file__), hooks_dir / "chain.py")
+    shutil.copy2(Path(match_module.__file__), hooks_dir / "match.py")
+
+    # Update plugin.json with hooks
+    plugin_json = json.loads((dest / ".claude-plugin" / "plugin.json").read_text())
+    plugin_json["hooks"] = {
+        "PreToolUse": [{
+            "matcher": "Bash",
+            "command": f"python3 {hooks_dir / 'hook.py'}",
+        }]
+    }
+    (dest / ".claude-plugin" / "plugin.json").write_text(
+        json.dumps(plugin_json, indent=2) + "\n"
+    )
+
     # Register + enable
     _register_plugin(version, dest)
     _enable_plugin()

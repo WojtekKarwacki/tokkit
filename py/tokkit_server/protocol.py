@@ -142,17 +142,20 @@ TOOL_DEFINITIONS = [
     {
         "name": "compact_output",
         "description": (
-            "Compress test/lint/build output to actionable summary. "
-            "Use INSTEAD OF reading raw pytest, ruff, jest, eslint, cargo, or docker output — "
-            "reads via path= so verbose output never enters your context. "
-            "Strips passing tests, extracts failures and errors. Saves 70-85%."
+            "Compress shell output saved to a file. "
+            "For LIVE shell commands, the PreToolUse hook handles compression automatically — "
+            "use this tool only for output already saved to disk via path=. "
+            "Supports: pytest, ruff, eslint, mypy, jest, tsc, cargo, docker, kubectl, "
+            "git (diff/status/log/show/blame/branch/stash), pip list, npm ls, "
+            "grep/rg, gh cli, env, tree, find, ls. "
+            "Lint output is grouped by rule for 70-85% savings."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {
                 "path": {"type": "string", "description": "Absolute path to file containing command output (preferred — read server-side)."},
                 "text": {"type": "string", "description": "Raw command output to compress (use path instead when possible)."},
-                "hint": {"type": "string", "description": "Tool identifier (e.g. 'pytest', 'eslint'). Omit for auto-detection."},
+                "hint": {"type": "string", "description": "Tool hint: pytest, unittest, ruff, mypy, pyright, pip, traceback, jest, vitest, mocha, eslint, tsc, webpack, vite, npm, cargo-test, cargo-build, cargo-clippy, docker, docker-compose, docker-ps, docker-images, docker-logs, kubectl, git-diff, git-status, git-log, git-show, git-blame, git-branch, git-stash, pip-list, pip-freeze, npm-ls, grep, rg, ag, ls, tree, find, gh, env. Omit for auto-detection."},
                 "verbose": {"type": "boolean", "description": "Include all items, not just problems. Default: false."},
             },
         },

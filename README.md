@@ -221,22 +221,177 @@ this figure.
 | JavaScript | `.js`, `.mjs`, `.cjs` |
 | TypeScript | `.ts`, `.tsx`, `.jsx` |
 
+## Hook Model — Automatic Shell Compression
+
+Tokkit installs a PreToolUse hook in Claude Code that intercepts every Bash
+tool call and rewrites it to `tokkit compress '<command>'`. The command runs
+normally, but its output passes through the parser library before entering the
+agent's context window.
+
+```
+Agent issues Bash("git diff HEAD~1")
+  → hook rewrites to: tokkit compress 'git diff HEAD~1'
+  → command runs, output compressed, compressed result returned
+  → raw diff never enters context
+```
+
+### Token overhead comparison
+
+| Delivery model | What the agent sees | Tool calls |
+|---------------|---------------------|:----------:|
+| Hook (compressed) | Compressed output only | 1 |
+| MCP `compact_output(text=...)` | Raw text in call + compressed result | 2 |
+| MCP `compact_output(path=...)` | Compressed result + framing | 2 |
+
+The hook model is strictly lower overhead: the raw output never touches the
+context window and requires no extra tool call.
+
+### Supported commands
+
+| Category | Commands | Hint |
+|----------|----------|------|
+| Git | `git diff` | `git-diff` |
+| Git | `git status` | `git-status` |
+| Git | `git log` | `git-log` |
+| Git | `git show` | `git-show` |
+| Git | `git blame` | `git-blame` |
+| Git | `git branch` | `git-branch` |
+| Git | `git stash` | `git-stash` |
+| Kubernetes | `kubectl get`, `kubectl describe`, `kubectl logs` | `kubectl` |
+| Docker | `docker-compose ps/logs` | `docker-compose` |
+| Docker | `docker ps`, `docker images` | `docker-ps` |
+| Docker | `docker logs` | `docker-logs` |
+| Python test | `pytest`, `unittest` | `pytest`, `unittest` |
+| Python lint/type | `ruff`, `mypy`, `pyright` | `ruff`, `mypy`, `pyright` |
+| Python other | `pip list/freeze`, tracebacks | `package-list`, `traceback` |
+| JS/TS test | `jest`, `vitest`, `mocha` | `jest`, `vitest`, `mocha` |
+| JS/TS lint/type | `tsc`, `eslint` | `tsc`, `eslint` |
+| JS/TS build | `webpack`, `vite` | `webpack`, `vite` |
+| JS/TS package | `npm ls` | `npm`, `package-list` |
+| Rust | `cargo test/build/clippy` | `cargo-test`, `cargo-build`, `cargo-clippy` |
+| Container | `docker build` | `docker` |
+| Shell | `tree`, `ls`, `find` | `file-listing` |
+| Search | `grep`, `rg`, `ag` | `search-results` |
+| GitHub | `gh` | `gh-cli` |
+| Environment | Any command with env vars | `env-redact` |
+| Any other | Generic fallback (always active) | — |
+
+The hint is auto-detected from the command name. The generic fallback applies
+to all unrecognized commands: ANSI strip, progress bar removal, deduplication,
+similar-line dedup, and head/tail truncation.
+
+### Lint grouping
+
+Rules with more than 3 violations are collapsed to a header with 2 examples:
+
+```
+# Before (ruff, 47 violations of E501)
+src/foo.py:12:89: E501 Line too long (92 > 88 characters)
+src/foo.py:34:89: E501 Line too long (95 > 88 characters)
+... (45 more)
+
+# After
+E501: 47 violations (line too long)
+  src/foo.py:12  Line too long (92 > 88 characters)
+  src/foo.py:34  Line too long (95 > 88 characters)
+```
+
+This collapses repetitive lint output from 8% savings to 70-85%.
+
+### Hook content compression benchmarks
+
+Content compression ratios measured by running `compact_output()` on realistic
+output fixtures. Token counts use chars/4. These measure the content savings
+only — the hook model adds zero additional overhead (1 tool call, compressed
+output only).
+
+| Scenario | Raw | Compressed | Savings |
+|----------|----:|----------:|--------:|
+| git diff (with lockfile) | 1,532 | 80 | **95%** |
+| git status (30+ files) | 429 | 169 | **61%** |
+| git log (verbose, 3 commits) | 219 | 40 | **82%** |
+| git blame (12 lines) | 247 | 68 | **72%** |
+| kubectl get pods (13 pods, 1 unhealthy) | 291 | 36 | **88%** |
+| kubectl logs (72 lines, 2 errors) | 1,283 | 520 | **59%** |
+| docker compose ps (5 healthy) | 205 | 10 | **95%** |
+| docker compose logs (3 services) | 1,157 | 591 | **49%** |
+| docker ps (3 running, 2 stopped) | 219 | 59 | **73%** |
+| docker logs (85 lines, 2 errors) | 1,278 | 491 | **62%** |
+| pip list (30 packages) | 262 | 75 | **71%** |
+| npm ls (nested tree) | 280 | 50 | **82%** |
+| ls -la (60 entries) | 822 | 173 | **79%** |
+| grep -r (5 files, many matches) | 445 | 307 | **31%** |
+| ruff (200 violations, 5 rules) | 2,951 | 242 | **92%** |
+| **Total** | **11,832** | **4,991** | **58%** |
+
+Agent-level benchmarks (total tokens including overhead) require the hook to
+be active in a real Claude Code session. Run `tokkit setup`, then use the
+agent normally — the hook activates on every Bash command automatically.
+
+## Using Both Models Together
+
+The hook and MCP models cover different surfaces:
+
+- **Hook**: live shell commands (git, cargo, pytest, kubectl, etc.) — automatic, zero overhead
+- **MCP**: files on disk (HTML, JSON, markdown) and code intelligence (graph tools) — explicit calls
+
+Both are installed with a single command:
+
+```bash
+uvx tokkit-ai
+```
+
+`tokkit setup` writes the MCP server config and the PreToolUse hook into the
+Claude Code plugin directory. Both activate on the next Claude Code session.
+
+## Complete Command Coverage
+
+All command patterns and their corresponding hint values:
+
+| Category | Commands | Hint |
+|----------|----------|------|
+| Git | `git diff` | `git-diff` |
+| Git | `git status` | `git-status` |
+| Git | `git log` | `git-log` |
+| Git | `git show` | `git-show` |
+| Git | `git blame` | `git-blame` |
+| Git | `git branch` | `git-branch` |
+| Git | `git stash` | `git-stash` |
+| Kubernetes | `kubectl get/describe/logs` | `kubectl` |
+| Docker | `docker-compose ps/logs` | `docker-compose` |
+| Docker | `docker ps`, `docker images` | `docker-ps` |
+| Docker | `docker logs` | `docker-logs` |
+| Docker | `docker build` | `docker` |
+| Python test | `pytest`, `python -m unittest` | `pytest`, `unittest` |
+| Python lint | `ruff check` | `ruff` |
+| Python type | `mypy`, `pyright` | `mypy`, `pyright` |
+| Python packages | `pip list`, `pip freeze` | `package-list` |
+| Python errors | Exception tracebacks | `traceback` |
+| JS/TS test | `jest`, `vitest`, `mocha` | `jest`, `vitest`, `mocha` |
+| JS/TS lint | `eslint` | `eslint` |
+| JS/TS type | `tsc` | `tsc` |
+| JS/TS build | `webpack`, `vite` | `webpack`, `vite` |
+| JS/TS packages | `npm ls` | `package-list` |
+| Rust | `cargo test` | `cargo-test` |
+| Rust | `cargo build` | `cargo-build` |
+| Rust | `cargo clippy` | `cargo-clippy` |
+| Shell | `tree`, `ls -la`, `find` | `file-listing` |
+| Search | `grep`, `rg`, `ag` | `search-results` |
+| GitHub | `gh issue/pr/repo` | `gh-cli` |
+| Environment | Commands printing env vars | `env-redact` |
+| Lint grouper | Post-processor for all lint output | *(automatic)* |
+| Generic | Any other command | *(automatic fallback)* |
+
 ## Tokkit and RTK
 
 [RTK](https://github.com/rtk-ai/rtk) saves tokens by intercepting Bash commands
 (e.g., `git status`, `ls`, `find`) and filtering their output before it enters
-context. Tokkit saves tokens on content that never passes through Bash: HTML
-pages, JSON payloads, code graph queries, markdown documents, and shell output
-from test/lint tools.
+context. Tokkit now covers the same surface through its built-in hook model, plus
+HTML pages, JSON payloads, code graph queries, and markdown documents through MCP.
 
-The two tools are complementary — RTK handles CLI command output, tokkit handles
-structured content. However, Claude Code's built-in native tools (Read, Grep,
-Glob) bypass RTK's Bash hook entirely, which limits RTK's coverage in Claude Code
-specifically. See [rtk-ai/rtk#538](https://github.com/rtk-ai/rtk/issues/538) for
-the current status of this limitation.
-
-We recommend using both tools together. RTK compresses what it can intercept
-through Bash, and tokkit compresses the rest through MCP.
+If you already use RTK, both tools can run side by side — they operate
+independently. Tokkit's hook takes precedence for commands it recognizes; RTK
+handles any gaps.
 
 ## Development
 

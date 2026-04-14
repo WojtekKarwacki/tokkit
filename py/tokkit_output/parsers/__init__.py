@@ -68,3 +68,47 @@ register(CargoTestParser())
 register(CargoBuildParser())
 register(CargoClippyParser())
 register(DockerParser())
+
+# --- Git parsers ---
+from tokkit_output.parsers.git_diff import GitDiffParser
+from tokkit_output.parsers.git_status import GitStatusParser
+from tokkit_output.parsers.git_log import GitLogParser
+from tokkit_output.parsers.git_show import GitShowParser
+from tokkit_output.parsers.git_blame import GitBlameParser
+from tokkit_output.parsers.git_branch import GitBranchParser
+from tokkit_output.parsers.git_stash import GitStashParser
+
+register(GitDiffParser())
+register(GitStatusParser())
+register(GitLogParser())
+register(GitShowParser())
+register(GitBlameParser())
+register(GitBranchParser())
+register(GitStashParser())
+
+# --- Kubernetes ---
+from tokkit_output.parsers.kubectl import KubectlParser
+
+register(KubectlParser())
+
+# --- Docker (compose, ps/images, logs) ---
+from tokkit_output.parsers.docker_compose import DockerComposeParser
+from tokkit_output.parsers.docker_ps import DockerPsParser
+from tokkit_output.parsers.docker_logs import DockerLogsParser
+
+register(DockerComposeParser())
+register(DockerPsParser())
+register(DockerLogsParser())
+
+# --- Shell tools ---
+from tokkit_output.parsers.package_list import PackageListParser
+from tokkit_output.parsers.file_listing import FileListingParser
+from tokkit_output.parsers.search_results import SearchResultsParser
+from tokkit_output.parsers.gh_cli import GhCliParser
+from tokkit_output.parsers.env_redact import EnvRedactParser
+
+register(PackageListParser())
+register(FileListingParser())
+register(SearchResultsParser())
+register(GhCliParser())
+register(EnvRedactParser())

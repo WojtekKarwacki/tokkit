@@ -103,6 +103,14 @@ def main() -> None:
         _run_init()
         return
 
+    if argv[0] == "compress":
+        if len(argv) < 2:
+            print("Usage: tokkit compress '<command>'", file=sys.stderr)
+            sys.exit(1)
+        from tokkit_hook.compress import run_and_compress
+        exit_code = run_and_compress(argv[1])
+        sys.exit(exit_code)
+
     if argv[0] == "benchmark":
         from tokkit_benchmark.main import main as benchmark_main
         benchmark_main(repo=argv[1] if len(argv) > 1 else None)
@@ -119,6 +127,7 @@ def main() -> None:
         print("  tokkit setup        Same as above")
         print("  tokkit serve        Run MCP server on stdio")
         print("  tokkit init         Configure tokkit for current project")
+        print("  tokkit compress '<cmd>'  Run command with output compression")
         print("  tokkit benchmark [owner/repo]  Run showcase benchmark (default: fastapi/fastapi)")
         print("  tokkit --version    Print version")
         print("  tokkit --help       Print this message")

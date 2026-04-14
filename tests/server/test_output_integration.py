@@ -31,7 +31,9 @@ def test_compact_output_no_session_required():
     text = "src/a.py:1:1: E501 Line too long\nFound 1 error.\n"
     result = handle_tool_call("compact_output", {"text": text, "hint": "ruff"})
     assert not result.get("isError")
-    assert "ruff" in result["content"][0]["text"]
+    content = result["content"][0]["text"]
+    # Small inputs may return ANSI-stripped raw (ratio check) or structured
+    assert "E501" in content
 
 
 def test_compact_output_token_stats_recorded():

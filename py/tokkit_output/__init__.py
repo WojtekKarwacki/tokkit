@@ -2,6 +2,8 @@
 
 __version__ = "0.1.0"
 
+_LINT_PARSER_IDS = frozenset({"ruff", "eslint", "mypy", "pyright", "cargo-clippy", "tsc"})
+
 
 def compact_output(text: str, hint: str | None = None, verbose: bool = False) -> str:
     """Compress shell command output into schema+CSV structured format."""
@@ -23,8 +25,15 @@ def compact_output(text: str, hint: str | None = None, verbose: bool = False) ->
         parser = detect_parser(cleaned, all_parsers())
 
     if parser is None:
-        from tokkit_output.universal import universal_clean
-        return universal_clean(text)
+        from tokkit_output.generic import generic_clean
+        output = generic_clean(text)
+        return output if len(output) <= len(cleaned) else cleaned
 
     result = parser.parse(cleaned, verbose=verbose)
-    return format_result(result)
+
+    if result.tool in _LINT_PARSER_IDS:
+        from tokkit_output.lint_grouper import group_by_rule
+        result = group_by_rule(result)
+
+    formatted = format_result(result)
+    return formatted if len(formatted) <= len(cleaned) else cleaned

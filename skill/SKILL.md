@@ -17,16 +17,34 @@ description: >
 
 ALWAYS prefer tokkit MCP tools over built-in Read/Grep when the task matches. These tools process data server-side — raw content never enters your context.
 
+## Hook Model (Automatic)
+
+A PreToolUse hook intercepts every Bash tool call and rewrites it to
+`tokkit compress '<command>'`. Shell output is compressed before it enters
+your context. This is automatic — you do not need to call `compact_output`
+for live shell commands.
+
+Covered automatically by the hook: `git diff/status/log/show/blame/branch/stash`,
+`kubectl`, `docker`/`docker-compose`, `pytest`, `ruff`, `mypy`, `cargo test/build/clippy`,
+`tree`/`ls`/`find`, `grep`/`rg`/`ag`, `gh`, `npm ls`, `pip list/freeze`,
+and any other command via the generic fallback (ANSI strip, dedup, truncation).
+
+The lint grouper post-processor automatically collapses rules with >3 violations
+to a header + 2 examples, reducing repetitive lint output by 70-85%.
+
+Call `compact_output` only when reading output already saved to a file on disk.
+
 ## When to Use Tokkit (decision table)
 
 Check this table BEFORE reaching for Read, Grep, or Glob:
 
 | You're about to... | Use this instead | Why |
 |---------------------|-----------------|-----|
+| Run a shell command (git, cargo, pytest, etc.) | Run it normally — hook compresses automatically | Hook intercepts, raw output never enters context |
 | Read an `.html` file | `clean_html(path=...)` | Server-side read, 60-90% fewer tokens |
 | Read a `.json` file | `compact_json(path=...)` | Server-side read, 30-70% fewer tokens |
 | Read a `.md` file for specific info | `search_markdown(path=..., query=...)` | Returns matching sections only, 70-85% fewer tokens |
-| Read test/lint/build output | `compact_output(path=..., hint=...)` | Strips noise, keeps failures, 70-85% fewer tokens |
+| Read saved test/lint/build output from a file | `compact_output(path=..., hint=...)` | Strips noise, keeps failures, 70-85% fewer tokens |
 | Grep for function definitions + references | `find_dead_code()` | One call vs O(N^2) greps |
 | Grep for route decorators | `find_routes()` | One call, detects all frameworks |
 | Recursive grep+read to trace call chains | `trace_fan(function_name=...)` | One call replaces 10-20 grep+read |
@@ -46,7 +64,9 @@ Check this table BEFORE reaching for Read, Grep, or Glob:
 | `clean_html` | Read .html file | 60-90% |
 | `compact_json` | Read .json file | 30-70% |
 | `search_markdown` | Read .md file | 70-85% |
-| `compact_output` | Read test/lint output | 70-85% |
+| `compact_output` | Read saved shell output from a file | 70-85% |
+
+Note: for live shell commands, the hook compresses output automatically. `compact_output` is for output already written to a file on disk.
 
 ## Workflow
 
