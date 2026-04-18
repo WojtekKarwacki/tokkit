@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "tokkit-ai"
-version = "0.1.18"
+version = "0.1.19"
 description = "Token-optimized code intelligence for LLM agents"
 requires-python = ">=3.11"
 license = {text = "MIT"}
@@ -37,6 +37,8 @@ python-packages = [
     "tokkit_skill",
     "tokkit_benchmark",
     "tokkit_output",
+    "tokkit_hook",
+    "tokkit_markdown",
 ]
 
 [tool.pytest.ini_options]
