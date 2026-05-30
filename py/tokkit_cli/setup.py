@@ -71,13 +71,11 @@ def install_plugin() -> Path:
         skills_dir / "references" / "tool-guide.md",
     )
 
-    # .mcp.json — plugin-scoped MCP server
+    # .mcp.json — plugin-scoped MCP server (flat format per plugin spec)
     (dest / ".mcp.json").write_text(json.dumps({
-        "mcpServers": {
-            "tokkit": {
-                "command": "uvx",
-                "args": ["tokkit-ai", "serve"],
-            }
+        "tokkit": {
+            "command": "uvx",
+            "args": ["tokkit-ai", "serve"],
         }
     }, indent=2) + "\n")
 
@@ -95,12 +93,15 @@ def install_plugin() -> Path:
     shutil.copy2(Path(chain_module.__file__), hooks_dir / "chain.py")
     shutil.copy2(Path(match_module.__file__), hooks_dir / "match.py")
 
-    # Update plugin.json with hooks
+    # Update plugin.json with hooks (nested format required by plugin schema)
     plugin_json = json.loads((dest / ".claude-plugin" / "plugin.json").read_text())
     plugin_json["hooks"] = {
         "PreToolUse": [{
             "matcher": "Bash",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/hook.py",
+            "hooks": [{
+                "type": "command",
+                "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/hook.py",
+            }],
         }]
     }
     (dest / ".claude-plugin" / "plugin.json").write_text(
@@ -116,6 +117,11 @@ def install_plugin() -> Path:
     # Register + enable
     _register_plugin(version, dest)
     _enable_plugin()
+
+    # Drop stale failed-load cache from prior invalid manifests
+    unknown = dest.parent / "unknown"
+    if unknown.exists():
+        shutil.rmtree(unknown)
 
     # Migrate away from old approach
     _remove_legacy_skill_ref()
@@ -207,24 +213,26 @@ def _enable_plugin() -> None:
 def _register_marketplace(plugin_dir: Path) -> None:
     """Create a local marketplace that lists the tokkit plugin and register it.
 
-    Claude Code resolves enabled plugins through a marketplace. We materialize a
-    self-contained local marketplace whose root *is* the plugin (source "./"),
-    then record it in known_marketplaces.json with a "local" source.
+    Claude Code resolves enabled plugins through a marketplace. The marketplace
+    root holds only marketplace.json; the plugin lives under plugins/<name>/,
+    matching the layout used by official and third-party marketplaces.
     """
     mp = _marketplace_dir()
+    plugin_source = f"./plugins/{PLUGIN_NAME}"
 
-    # Copy the freshly built plugin into the marketplace root (source of truth).
     if mp.exists():
         shutil.rmtree(mp)
-    shutil.copytree(plugin_dir, mp)
 
-    # marketplace.json lives alongside the plugin manifest in .claude-plugin/.
+    plugin_dest = mp / "plugins" / PLUGIN_NAME
+    shutil.copytree(plugin_dir, plugin_dest)
+
+    (mp / ".claude-plugin").mkdir(parents=True, exist_ok=True)
     (mp / ".claude-plugin" / "marketplace.json").write_text(json.dumps({
         "name": MARKETPLACE_NAME,
         "owner": {"name": "tokkit"},
         "plugins": [{
             "name": PLUGIN_NAME,
-            "source": "./",
+            "source": plugin_source,
             "description": "Token-optimized code intelligence for LLM agents",
         }],
     }, indent=2) + "\n")
@@ -242,7 +250,7 @@ def _register_marketplace(plugin_dir: Path) -> None:
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
     data[MARKETPLACE_NAME] = {
-        "source": {"source": "local", "path": str(mp)},
+        "source": {"source": "directory", "path": str(mp)},
         "installLocation": str(mp),
         "lastUpdated": now,
     }

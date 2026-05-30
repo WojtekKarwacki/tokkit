@@ -41,9 +41,10 @@ def test_install_plugin_creates_structure(tmp_path):
     assert pj["name"] == "tokkit"
     assert "version" in pj
 
-    # Verify .mcp.json content
+    # Verify .mcp.json content (plugin flat format, not user mcp.json wrapper)
     mcp = json.loads((dest / ".mcp.json").read_text())
-    assert "tokkit" in mcp["mcpServers"]
+    assert "tokkit" in mcp
+    assert mcp["tokkit"]["command"] == "uvx"
 
 
 def test_install_plugin_registers(tmp_path):
@@ -85,25 +86,27 @@ def test_install_plugin_registers_marketplace(tmp_path):
     known = json.loads((plugins / "known_marketplaces.json").read_text())
     assert MARKETPLACE_NAME in known
     entry = known[MARKETPLACE_NAME]
-    assert entry["source"]["source"] == "local"
+    assert entry["source"]["source"] == "directory"
     mp_dir = plugins / "marketplaces" / MARKETPLACE_NAME
     assert entry["source"]["path"] == str(mp_dir)
     assert entry["installLocation"] == str(mp_dir)
     assert "lastUpdated" in entry
 
-    # marketplace.json lists the plugin with a self-referential source
+    # marketplace.json lists the plugin under plugins/<name>/
     manifest = json.loads((mp_dir / ".claude-plugin" / "marketplace.json").read_text())
     assert manifest["name"] == MARKETPLACE_NAME
     assert "owner" in manifest
     names = [p["name"] for p in manifest["plugins"]]
     assert PLUGIN_NAME in names
     plugin_entry = next(p for p in manifest["plugins"] if p["name"] == PLUGIN_NAME)
-    assert plugin_entry["source"] == "./"
+    assert plugin_entry["source"] == f"./plugins/{PLUGIN_NAME}"
 
-    # marketplace root carries the actual plugin files (it IS the plugin)
-    assert (mp_dir / ".claude-plugin" / "plugin.json").exists()
-    assert (mp_dir / ".mcp.json").exists()
-    assert (mp_dir / "hooks" / "hook.py").exists()
+    # marketplace root holds only marketplace.json; plugin files live in plugins/
+    plugin_dir = mp_dir / "plugins" / PLUGIN_NAME
+    assert not (mp_dir / ".claude-plugin" / "plugin.json").exists()
+    assert (plugin_dir / ".claude-plugin" / "plugin.json").exists()
+    assert (plugin_dir / ".mcp.json").exists()
+    assert (plugin_dir / "hooks" / "hook.py").exists()
 
 
 def test_install_plugin_hook_uses_plugin_root(tmp_path):
@@ -113,8 +116,9 @@ def test_install_plugin_hook_uses_plugin_root(tmp_path):
         dest = install_plugin()
 
     pj = json.loads((dest / ".claude-plugin" / "plugin.json").read_text())
-    cmd = pj["hooks"]["PreToolUse"][0]["command"]
-    assert "${CLAUDE_PLUGIN_ROOT}" in cmd
+    hook = pj["hooks"]["PreToolUse"][0]["hooks"][0]
+    assert hook["type"] == "command"
+    assert "${CLAUDE_PLUGIN_ROOT}" in hook["command"]
 
 
 def test_install_plugin_removes_legacy_skill_ref(tmp_path):
