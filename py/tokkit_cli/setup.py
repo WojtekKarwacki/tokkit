@@ -8,6 +8,8 @@ import os
 
 
 PLUGIN_KEY = "tokkit@tokkit"
+MARKETPLACE_NAME = "tokkit"
+PLUGIN_NAME = "tokkit"
 LEGACY_SKILL_REF = "@~/.local/share/tokkit/SKILL.md"
 
 
@@ -30,6 +32,14 @@ def _installed_plugins_path() -> Path:
 
 def _settings_path() -> Path:
     return _home() / ".claude" / "settings.json"
+
+
+def _marketplace_dir() -> Path:
+    return _home() / ".claude" / "plugins" / "marketplaces" / MARKETPLACE_NAME
+
+
+def _known_marketplaces_path() -> Path:
+    return _home() / ".claude" / "plugins" / "known_marketplaces.json"
 
 
 def install_plugin() -> Path:
@@ -90,12 +100,18 @@ def install_plugin() -> Path:
     plugin_json["hooks"] = {
         "PreToolUse": [{
             "matcher": "Bash",
-            "command": f"python3 {hooks_dir / 'hook.py'}",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/hook.py",
         }]
     }
     (dest / ".claude-plugin" / "plugin.json").write_text(
         json.dumps(plugin_json, indent=2) + "\n"
     )
+
+    # Register a local marketplace so Claude Code's plugin loader can resolve
+    # the plugin. Without this, the plugin is "orphaned": present in
+    # installed_plugins.json and enabledPlugins but never loaded, because the
+    # loader resolves enabled plugins through their marketplace.
+    _register_marketplace(dest)
 
     # Register + enable
     _register_plugin(version, dest)
@@ -115,6 +131,9 @@ def uninstall_plugin() -> None:
     cache_dir = _home() / ".claude" / "plugins" / "cache" / "tokkit"
     if cache_dir.exists():
         shutil.rmtree(cache_dir)
+
+    # Remove the local marketplace + its registration
+    _unregister_marketplace()
 
     # Unregister
     path = _installed_plugins_path()
@@ -183,6 +202,67 @@ def _enable_plugin() -> None:
 
     settings.setdefault("enabledPlugins", {})[PLUGIN_KEY] = True
     path.write_text(json.dumps(settings, indent=2) + "\n")
+
+
+def _register_marketplace(plugin_dir: Path) -> None:
+    """Create a local marketplace that lists the tokkit plugin and register it.
+
+    Claude Code resolves enabled plugins through a marketplace. We materialize a
+    self-contained local marketplace whose root *is* the plugin (source "./"),
+    then record it in known_marketplaces.json with a "local" source.
+    """
+    mp = _marketplace_dir()
+
+    # Copy the freshly built plugin into the marketplace root (source of truth).
+    if mp.exists():
+        shutil.rmtree(mp)
+    shutil.copytree(plugin_dir, mp)
+
+    # marketplace.json lives alongside the plugin manifest in .claude-plugin/.
+    (mp / ".claude-plugin" / "marketplace.json").write_text(json.dumps({
+        "name": MARKETPLACE_NAME,
+        "owner": {"name": "tokkit"},
+        "plugins": [{
+            "name": PLUGIN_NAME,
+            "source": "./",
+            "description": "Token-optimized code intelligence for LLM agents",
+        }],
+    }, indent=2) + "\n")
+
+    # Record the marketplace in known_marketplaces.json.
+    path = _known_marketplaces_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        try:
+            data = json.loads(path.read_text())
+        except (json.JSONDecodeError, OSError):
+            data = {}
+    else:
+        data = {}
+
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+    data[MARKETPLACE_NAME] = {
+        "source": {"source": "local", "path": str(mp)},
+        "installLocation": str(mp),
+        "lastUpdated": now,
+    }
+    path.write_text(json.dumps(data, indent=2) + "\n")
+
+
+def _unregister_marketplace() -> None:
+    """Remove the local marketplace directory and its known_marketplaces entry."""
+    mp = _marketplace_dir()
+    if mp.exists():
+        shutil.rmtree(mp)
+
+    path = _known_marketplaces_path()
+    if path.exists():
+        try:
+            data = json.loads(path.read_text())
+        except (json.JSONDecodeError, OSError):
+            return
+        if data.pop(MARKETPLACE_NAME, None) is not None:
+            path.write_text(json.dumps(data, indent=2) + "\n")
 
 
 # --- legacy migration helpers ---

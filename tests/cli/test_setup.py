@@ -5,7 +5,13 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from tokkit_cli.setup import install_plugin, uninstall_plugin, PLUGIN_KEY
+from tokkit_cli.setup import (
+    install_plugin,
+    uninstall_plugin,
+    PLUGIN_KEY,
+    MARKETPLACE_NAME,
+    PLUGIN_NAME,
+)
 
 
 def _make_home(tmp_path):
@@ -67,6 +73,50 @@ def test_install_plugin_enables(tmp_path):
     assert settings["effortLevel"] == "high"
 
 
+def test_install_plugin_registers_marketplace(tmp_path):
+    home = _make_home(tmp_path)
+
+    with patch.dict(os.environ, {"HOME": str(home)}):
+        install_plugin()
+
+    plugins = home / ".claude" / "plugins"
+
+    # known_marketplaces.json has a local "tokkit" marketplace
+    known = json.loads((plugins / "known_marketplaces.json").read_text())
+    assert MARKETPLACE_NAME in known
+    entry = known[MARKETPLACE_NAME]
+    assert entry["source"]["source"] == "local"
+    mp_dir = plugins / "marketplaces" / MARKETPLACE_NAME
+    assert entry["source"]["path"] == str(mp_dir)
+    assert entry["installLocation"] == str(mp_dir)
+    assert "lastUpdated" in entry
+
+    # marketplace.json lists the plugin with a self-referential source
+    manifest = json.loads((mp_dir / ".claude-plugin" / "marketplace.json").read_text())
+    assert manifest["name"] == MARKETPLACE_NAME
+    assert "owner" in manifest
+    names = [p["name"] for p in manifest["plugins"]]
+    assert PLUGIN_NAME in names
+    plugin_entry = next(p for p in manifest["plugins"] if p["name"] == PLUGIN_NAME)
+    assert plugin_entry["source"] == "./"
+
+    # marketplace root carries the actual plugin files (it IS the plugin)
+    assert (mp_dir / ".claude-plugin" / "plugin.json").exists()
+    assert (mp_dir / ".mcp.json").exists()
+    assert (mp_dir / "hooks" / "hook.py").exists()
+
+
+def test_install_plugin_hook_uses_plugin_root(tmp_path):
+    home = _make_home(tmp_path)
+
+    with patch.dict(os.environ, {"HOME": str(home)}):
+        dest = install_plugin()
+
+    pj = json.loads((dest / ".claude-plugin" / "plugin.json").read_text())
+    cmd = pj["hooks"]["PreToolUse"][0]["command"]
+    assert "${CLAUDE_PLUGIN_ROOT}" in cmd
+
+
 def test_install_plugin_removes_legacy_skill_ref(tmp_path):
     home = _make_home(tmp_path)
     (home / ".claude" / "CLAUDE.md").write_text("@RTK.md\n@~/.local/share/tokkit/SKILL.md\n")
@@ -125,6 +175,13 @@ def test_uninstall_plugin(tmp_path):
 
     # Plugin cache removed
     assert not (home / ".claude" / "plugins" / "cache" / "tokkit").exists()
+
+    # Marketplace dir + registration removed
+    assert not (home / ".claude" / "plugins" / "marketplaces" / MARKETPLACE_NAME).exists()
+    known_path = home / ".claude" / "plugins" / "known_marketplaces.json"
+    if known_path.exists():
+        known = json.loads(known_path.read_text())
+        assert MARKETPLACE_NAME not in known
 
     # Unregistered
     installed = json.loads((home / ".claude" / "plugins" / "installed_plugins.json").read_text())
