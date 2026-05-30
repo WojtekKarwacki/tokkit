@@ -47,8 +47,10 @@ tokkit init                # write .mcp.json in current directory only
 
 ### Token savings stats
 
-Every tool call records its token savings to `~/.local/share/tokkit/stats.json`.
-Stats persist across sessions and reboots.
+Both MCP tool calls and Bash commands compressed by the hook record their
+token savings to `~/.local/share/tokkit/stats.json`. Hook savings are tracked
+per command type under `compress:<hint>` keys (e.g. `compress:git-status`) and
+attributed to the `hook` agent. Stats persist across sessions and reboots.
 
 To see savings inline on every tool response, set `TOKKIT_SHOW_SAVINGS=1`
 in your MCP config:
