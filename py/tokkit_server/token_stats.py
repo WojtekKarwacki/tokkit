@@ -23,11 +23,24 @@ Methodology
 import json
 import os
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import Lock
 
+try:
+    import fcntl  # POSIX-only; used for cross-process stats locking
+except ImportError:  # pragma: no cover - non-POSIX fallback
+    fcntl = None
+
 CHARS_PER_TOKEN = 4  # rough estimate for code
+
+# Identity for queries recorded by the Bash compression hook (`tokkit compress`).
+# Each hook invocation is a separate short-lived process, so they share one
+# stable chat id rather than minting a per-process uuid (which would explode
+# the chats map). Agent name distinguishes them from MCP-client sessions.
+_HOOK_CHAT_ID = "bash-hook"
+_HOOK_AGENT = "hook"
 _STATS_FORMAT_VERSION = 4
 
 # ---------------------------------------------------------------------------
@@ -122,9 +135,32 @@ def _load_stats() -> dict:
 
 
 def _save_stats(stats: dict) -> None:
+    # Atomic write: a concurrent reader/writer never sees a half-written file.
     path = _stats_path()
-    with open(path, "w") as f:
+    tmp = f"{path}.{os.getpid()}.tmp"
+    with open(tmp, "w") as f:
         json.dump(stats, f, indent=2)
+    os.replace(tmp, path)
+
+
+@contextmanager
+def _interprocess_lock():
+    """Serialize read-modify-write of stats.json across processes.
+
+    The Bash hook records from many short-lived `tokkit compress` processes that
+    may run concurrently; the threading lock alone does not protect across
+    processes. Falls back to a no-op where fcntl is unavailable.
+    """
+    if fcntl is None:
+        yield
+        return
+    lock_path = os.path.join(_data_dir(), "stats.lock")
+    with open(lock_path, "w") as lf:
+        fcntl.flock(lf, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lf, fcntl.LOCK_UN)
 
 
 # ---------------------------------------------------------------------------
@@ -453,7 +489,7 @@ def record_query(
 ) -> None:
     """Record a query's token metrics to persistent stats."""
     saved = baseline_tokens - content_tokens
-    with _lock:
+    with _lock, _interprocess_lock():
         stats = _load_stats()
         stats["total_queries"] += 1
         stats["total_content_tokens"] += content_tokens
@@ -510,6 +546,37 @@ def record_query(
         chat_tool["baseline_calls"] += baseline_calls
 
         _save_stats(stats)
+
+
+def record_bash_compression(hint: str | None, raw_text: str, compressed_text: str) -> dict:
+    """Record savings for a Bash command compressed by the `tokkit compress` hook.
+
+    `raw_text` is the original command output (the baseline a bare shell would
+    have dumped into context); `compressed_text` is what tokkit actually emits.
+    Recorded under the `compress:<hint>` tool key and attributed to the synthetic
+    "hook" agent so hook savings are visible alongside MCP-tool savings.
+
+    Best-effort: never raises — the caller must not let stats break a command.
+    """
+    try:
+        content_tokens = len(compressed_text.encode("utf-8")) // CHARS_PER_TOKEN
+        baseline_tokens = len(raw_text.encode("utf-8")) // CHARS_PER_TOKEN
+        tool_name = f"compress:{hint}" if hint else "compress:other"
+
+        # Attribute to the shared hook chat/agent for this process.
+        global _agent, _chat_id, _session_start
+        _agent = _HOOK_AGENT
+        _chat_id = _HOOK_CHAT_ID
+
+        record_query(tool_name, content_tokens, baseline_tokens, baseline_calls=1)
+        return {
+            "tool": tool_name,
+            "content_tokens": content_tokens,
+            "baseline_tokens": baseline_tokens,
+            "content_saved": baseline_tokens - content_tokens,
+        }
+    except Exception:
+        return {}
 
 
 def _estimate_context_tokens(content_tokens: int, num_calls: int) -> int:

@@ -290,10 +290,21 @@ def _remove_legacy_skill_ref() -> None:
 
 
 def _remove_legacy_skill_dir() -> None:
-    """Remove old ~/.local/share/tokkit/ skill files."""
+    """Remove old ~/.local/share/tokkit/ skill files.
+
+    Only deletes the legacy skill artifacts — NOT the whole directory, which is
+    also the stats data dir (stats.json). Wiping it on every `setup` would
+    destroy accumulated token-savings history.
+    """
     legacy = _home() / ".local" / "share" / "tokkit"
-    if legacy.exists():
-        shutil.rmtree(legacy)
+    if not legacy.exists():
+        return
+    for name in ("SKILL.md", "references"):
+        target = legacy / name
+        if target.is_dir():
+            shutil.rmtree(target)
+        elif target.exists():
+            target.unlink()
 
 
 def _remove_mcp_from_user_config() -> None:

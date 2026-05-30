@@ -27,7 +27,18 @@ def run_and_compress(command: str) -> int:
 
     print(compressed, end="")
 
+    _record_savings(hint, raw_output, compressed)
+
     return result.returncode
+
+
+def _record_savings(hint: str | None, raw_output: str, compressed: str) -> None:
+    """Record this compression to persistent stats. Best-effort — never raises."""
+    try:
+        from tokkit_server.token_stats import record_bash_compression
+        record_bash_compression(hint, raw_output, compressed)
+    except Exception:
+        pass
 
 
 def main() -> None:
