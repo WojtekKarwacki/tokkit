@@ -138,11 +138,31 @@ def test_install_plugin_removes_legacy_skill_dir(tmp_path):
     legacy = home / ".local" / "share" / "tokkit"
     legacy.mkdir(parents=True)
     (legacy / "SKILL.md").write_text("old")
+    (legacy / "references").mkdir()
+    (legacy / "references" / "tool-guide.md").write_text("old")
 
     with patch.dict(os.environ, {"HOME": str(home)}):
         install_plugin()
 
-    assert not legacy.exists()
+    # Legacy skill artifacts gone...
+    assert not (legacy / "SKILL.md").exists()
+    assert not (legacy / "references").exists()
+
+
+def test_install_plugin_preserves_stats(tmp_path):
+    """`setup` must not wipe stats.json (same dir as the legacy skill dir)."""
+    home = _make_home(tmp_path)
+    legacy = home / ".local" / "share" / "tokkit"
+    legacy.mkdir(parents=True)
+    (legacy / "SKILL.md").write_text("old")
+    stats = legacy / "stats.json"
+    stats.write_text('{"total_queries": 42}')
+
+    with patch.dict(os.environ, {"HOME": str(home)}):
+        install_plugin()
+
+    assert stats.exists()
+    assert json.loads(stats.read_text())["total_queries"] == 42
 
 
 def test_install_plugin_removes_mcp_from_user_config(tmp_path):
