@@ -198,7 +198,7 @@ def build_initialize_response(request_id) -> str:
         {
             "protocolVersion": "2024-11-05",
             "capabilities": {"tools": {}},
-            "serverInfo": {"name": "tokkit", "version": "0.1.20"},
+            "serverInfo": {"name": "tokkit", "version": "0.1.21"},
         },
     )
 
